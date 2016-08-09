@@ -7,7 +7,7 @@ defmodule BlackSea do
     import Supervisor.Spec, warn: false
 
     opts = [
-      port: Application.get_env(:black_sea, :port)
+      port: Application.get_env(:blacksea, :port)
     ]
 
     children = [

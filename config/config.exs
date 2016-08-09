@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :black_sea, key: :value
+#     config :blacksea, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:black_sea, :key)
+#     Application.get_env(:blacksea, :key)
 #
 # Or configure a 3rd-party app:
 #
