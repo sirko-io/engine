@@ -1,6 +1,6 @@
 # BlackSea
 
-**TODO: Add description**
+A simple engine to predict a next page to be visited by a user.
 
 ## Installation
 
