@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :blacksea, key: :value
+#     config :sirko, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:blacksea, :key)
+#     Application.get_env(:sirko, :key)
 #
 # Or configure a 3rd-party app:
 #
@@ -28,3 +28,19 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+config :neo4j_sips, Neo4j,
+  url: "http://localhost:7474",
+  pool_size: 5,
+  max_overflow: 2,
+  timeout: 30,
+  basic_auth: [username: "neo4j", password: "password"]
+
+config :sirko, :web,
+  port: 4000,
+  client_url: "http://localhost:3000" # it is required to setup CORS
+
+config :sirko, :scheduler,
+  timeout: 60 * 60 * 1000 # how often the scheduler should close expired sessions
+
+import_config "#{Mix.env}.exs"
