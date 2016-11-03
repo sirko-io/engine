@@ -117,7 +117,7 @@ defmodule Sirko.Db.SessionTest do
     end
 
     test "returns keys of sessions which are inactive for 1 hr" do
-      session_keys = Db.Session.all_inactive(60 * 60)
+      session_keys = Db.Session.all_inactive(60 * 60 * 1000)
 
       assert session_keys == ["skey21", "skey20"]
     end

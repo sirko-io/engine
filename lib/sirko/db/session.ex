@@ -87,7 +87,7 @@ defmodule Sirko.Db.Session do
   end
 
   @doc """
-  Returns a list of keys of sessions which are inactive for the given number of seconds.
+  Returns a list of session keys which are inactive for the given number of milliseconds.
   """
   def all_inactive(time) do
     query = """

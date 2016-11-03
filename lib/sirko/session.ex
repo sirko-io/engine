@@ -3,7 +3,7 @@ defmodule Sirko.Session do
 
   @default_key_length 32
 
-  @inactive_session_in 60 * 60
+  @inactive_session_in 60 * 60 * 1000 # 1 hour
 
   @moduledoc """
   This module provides method to track user's session.
@@ -56,7 +56,7 @@ defmodule Sirko.Session do
   end
 
   @doc """
-  Finds sessions which are inactive for last `@inactive_session_in` hour and expires them.
+  Finds and expires sessions which are inactive for last `@inactive_session_in` milliseconds.
   """
   def expire_all_inactive do
     session_keys = Db.Session.all_inactive(@inactive_session_in)
