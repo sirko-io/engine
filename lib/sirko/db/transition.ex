@@ -6,10 +6,10 @@ defmodule Sirko.Db.Transition do
   """
   def track(session_key) do
     query = """
-      MATCH (a)-[:SESSION { key: {session_key} }]->(b)
+      MATCH (a)-[s:SESSION { key: {session_key} }]->(b)
       MERGE (a)-[t:TRANSITION]->(b)
-      ON CREATE SET t.count = 1
-      ON MATCH SET t.count = t.count + 1
+      ON CREATE SET t.count = s.count
+      ON MATCH SET t.count = t.count + s.count
     """
 
     Neo.query(query, %{ session_key: session_key })

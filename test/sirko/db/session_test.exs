@@ -35,7 +35,8 @@ defmodule Sirko.Db.SessionTest do
 
       assert start_page["start"] == true
       assert current_page["path"] == current_path
-      assert session["created_at"] != nil
+      assert session["occurred_at"] != nil
+      assert session["count"] == 1
     end
 
     test "does not create extra nodes when the page exists" do
@@ -66,7 +67,7 @@ defmodule Sirko.Db.SessionTest do
       Db.Session.track(session_key, referral_path, current_path)
 
       query = """
-        MATCH (referral:Page)-[session:SESSION {key: {key} }]->(current:Page)
+        MATCH (referral:Page)-[session:SESSION { key: {key} }]->(current:Page)
         RETURN referral, current, session
       """
 
@@ -78,7 +79,8 @@ defmodule Sirko.Db.SessionTest do
 
       assert referral_page["path"] == referral_path
       assert current_page["path"] == current_path
-      assert session["created_at"] != nil
+      assert session["occurred_at"] != nil
+      assert session["count"] == 1
     end
 
     test "does not create extra nodes when the page exists", %{ referral_path: referral_path } do
@@ -86,6 +88,24 @@ defmodule Sirko.Db.SessionTest do
       Db.Session.track("skey2", referral_path, "/list")
 
       assert count_pages == 2
+    end
+
+    test "updates the count field for the relation when the relation with the given key exists", %{ referral_path: referral_path } do
+      session_key = "skey1"
+
+      Db.Session.track(session_key, referral_path, "/list")
+      Db.Session.track(session_key, referral_path, "/list")
+
+      query = """
+        MATCH (:Page)-[session:SESSION { key: {key} }]->(:Page)
+        RETURN session
+      """
+
+      [%{
+        "session"  => session
+      }] = execute_query(query, %{ key: session_key })
+
+      assert session["count"] == 2
     end
   end
 

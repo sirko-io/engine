@@ -17,24 +17,26 @@ defmodule Sirko.Db.Session do
     query = """
       MERGE (start:Page { start: true })
       MERGE (current:Page { path: {path} })
-      CREATE (start)-[s:SESSION { key: {key} }]->(current)
-      SET s.created_at = timestamp()
+      CREATE (start)-[s:SESSION { key: {key}, count: 1 }]->(current)
+      SET s.occurred_at = timestamp()
     """
 
     Neo.query(query, %{ key: session_key, path: current_path })
   end
 
   @doc """
-  Creates a relation between 2 pages. Basically, it tracks a visited page by a user
-  having the given session key. Since we consider navigation as a path, the referral page
-  must be provided.
+  Creates a session relation between 2 visited pages if it is
+  a first transition between those pages during the current session.
+  Otherwise, the relation will be updated to reflect a number of times
+  the transition happened during the current session.
   """
   def track(session_key, referral_path, current_path) do
     query = """
       MATCH (referral:Page { path: {referral_path} })
       MERGE (current:Page { path: {current_path} })
-      CREATE (referral)-[s:SESSION { key: {key} }]->(current)
-      SET s.created_at = timestamp()
+      MERGE (referral)-[s:SESSION { key: {key} }]->(current)
+      ON CREATE SET s.occurred_at = timestamp(), s.count = 1
+      ON MATCH SET s.occurred_at = timestamp(), s.count = s.count + 1
     """
 
     Neo.query(
@@ -48,8 +50,6 @@ defmodule Sirko.Db.Session do
   and the exit point. After that, the whole session is treated as expired.
   """
   def expire(session_key) do
-    # TODO: remove session if it is too short (visited one page only)
-
     query = """
       MATCH (:Page { start: true })-[:SESSION * { key: {key} }]->(n:Page)
       WITH last(collect(n)) AS last_page
@@ -93,9 +93,9 @@ defmodule Sirko.Db.Session do
     query = """
       MATCH ()-[s:SESSION]->()
       WITH s
-      ORDER BY s.created_at
+      ORDER BY s.occurred_at
       WITH s.key AS key, last(collect(s)) AS last_hit
-      WHERE last_hit.expired_at IS NULL AND timestamp() - last_hit.created_at > {time}
+      WHERE last_hit.expired_at IS NULL AND timestamp() - last_hit.occurred_at > {time}
       RETURN collect(last_hit.key) as keys
     """
 

@@ -27,20 +27,23 @@ defmodule Sirko.Db.TransitionTest do
     test "records transitions between pages", %{ session_key: session_key } do
       Db.Transition.track(session_key)
 
-      assert transition_counts == [1, 1, 1]
+      assert transition_counts == [1, 2, 1]
     end
 
     test "increases counts for a transition when it exists", %{ session_key: session_key } do
       query = """
-        MATCH (start:Page { start: true }), (list:Page { path: "/list" })
+        MATCH (start:Page { start: true }),
+        (list:Page { path: "/list" }),
+        (popular:Page { path: "/popular" })
         CREATE (start)-[:TRANSITION { count: 2 }]->(list)
+        CREATE (list)-[:TRANSITION { count: 2 }]->(popular)
       """
 
       execute_query(query)
 
       Db.Transition.track(session_key)
 
-      assert transition_counts == [3, 1, 1]
+      assert transition_counts == [3, 4, 1]
     end
 
     test "does not affect transitions which does not belong to the given session", %{ session_key: session_key } do
