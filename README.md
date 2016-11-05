@@ -1,5 +1,7 @@
 # Sirko Engine
 
+[![Build Status](https://travis-ci.org/dnesteryuk/sirko-engine.svg?branch=master)](https://travis-ci.org/dnesteryuk/sirko-engine)
+
 A simple engine to track users' navigation on a site and predict a next page which most likely will be visited by the current user. As soon as we are able to predict the next page, we can prerender that page in order to provide better experience (an instant transition in some cases) to the user.
 
 A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
@@ -22,4 +24,4 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 ## Launch
 
-    iex -S mix
+    $ iex -S mix
