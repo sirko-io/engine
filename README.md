@@ -6,22 +6,43 @@ A simple engine to track users' navigation on a site and predict a next page whi
 
 A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
 
-## Installation
+## Development
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+### Requirements
 
-  1. Add sirko to your list of dependencies in `mix.exs`:
+ - [Elixir](http://elixir-lang.org/install.html) 1.3.*
+ - [Neo4j](https://neo4j.com/download/) 3.0.*
 
-        def deps do
-          [{:sirko, "~> 0.0.1"}]
-        end
+If you use [docker](https://www.docker.com/), execute the following command to install Neo4j:
 
-  2. Ensure sirko is started before your application:
+```
+$ sudo docker run --name neo4j-db -d --env NEO4J_AUTH=none --restart always --publish 7474:7474 neo4j:3.0.6
+```
 
-        def application do
-          [applications: [:sirko]]
-        end
+The web interface of Neo4j is accessible on [http://localhost:7474](http://localhost:7474).
 
-## Launch
+### Setup
 
+1. Clone your fork.
+2. Install dependencies:
+
+    ```
+    $ mix deps.get
+    ```
+
+3. Launch the app:
+
+    ```
     $ iex -S mix
+    ```
+
+  _Note:_ The [sirko client](https://github.com/dnesteryuk/sirko-client) has to be configured to send data to `http://localhost:4000`.
+
+### Testing
+
+The app uses [ExUnit](http://elixir-lang.org/docs/stable/ex_unit/ExUnit.html) as a testing framework.
+Execute the following command to launch the tests:
+
+```
+$ mix test
+```
