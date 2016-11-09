@@ -14,12 +14,6 @@ defmodule Sirko.SessionTest do
     :ok
   end
 
-  describe "start/1" do
-    test "creates a new session with a unique key" do
-      assert start("/popular") != start("/popular")
-    end
-  end
-
   describe "track/3" do
     setup do
       session_key = "skey20"
@@ -29,8 +23,12 @@ defmodule Sirko.SessionTest do
       { :ok, [session_key: session_key] }
     end
 
+    test "starts a new session with a unique key when a session key is not given" do
+      assert track("/popular", nil, nil) != track("/popular", nil, nil)
+    end
+
     test "adds a new visited page to the existing session", %{ session_key: session_key } do
-      track(session_key, "/list", "/details")
+      track("/details", "/list", session_key)
 
       query = """
         MATCH ()-[s:SESSION { key: {key} }]->()
@@ -40,39 +38,30 @@ defmodule Sirko.SessionTest do
       assert items_count(query, session_key) == 3
     end
 
-    test "does not create a new session relation when the session key is invalid" do
-      session_key = "fake-skey"
+    test "returns the given session key", %{ session_key: session_key } do
+      assert track("/details", "/list", session_key) == session_key
+    end
 
-      track(session_key, "/list", "/details")
+    test "does not create a new session relation when the session key is invalid" do
+      invalid_session_key = "fake-skey"
+
+      track("/details", "/list", invalid_session_key)
 
       query = """
         MATCH ()-[s:SESSION { key: {key} }]->()
         RETURN count(s) AS items_count
       """
 
-      assert items_count(query, session_key) == 0
+      assert items_count(query, invalid_session_key) == 0
     end
 
     test "starts a new session when the session key is invalid" do
-      fake_session_key = "fake-skey"
+      invalid_session_key = "fake-skey"
 
-      { :new_session, session_key } = track(fake_session_key, "/list", "/details")
+      session_key = track("/details", "/list", invalid_session_key)
 
       assert session_key != nil
-      assert session_key != fake_session_key
-    end
-
-    # TODO: think more about this case
-    @tag :skip
-    test "does not create a new session relation when the session does not include the given referral", %{ session_key: session_key } do
-      track(session_key, "/details", "/popular")
-
-      query = """
-        MATCH ()-[s:SESSION { key: {key} }]->()
-        RETURN count(s) AS items_count
-      """
-
-      assert items_count(query, session_key) == 1
+      assert session_key != invalid_session_key
     end
   end
 

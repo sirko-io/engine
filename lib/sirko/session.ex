@@ -1,48 +1,40 @@
 defmodule Sirko.Session do
+  @moduledoc """
+  This module provides methods to track a user session.
+
+  The session is crucial element in the prediction solution.
+  The module tracks how users navigate a site. The session is considered as a chain
+  of visited pages by a particular user.
+  """
+
   alias Sirko.Db, as: Db
 
   @default_key_length 32
 
   @inactive_session_in 60 * 60 * 1000 # 1 hour
 
-  @moduledoc """
-  This module provides method to track user's session.
-
-  Session is crucial element in the prediction solution. Basically, this
-  module tracks how users navigate a site. The session is considered as a chain
-  of visited pages by a particular user. To make correct prediction visited pages
-  must be linked in a real site.
-  """
-
   @doc """
-  Creates a new session record in the DB and returns a unique token
+  Creates a new session relation in the DB and returns a unique session key
   which is used later in order to identify a being tracked session.
   """
-  def start(page_path) do
+  def track(current_path, _, nil) do
     session_key = generate_key
 
-    Db.Session.create(session_key, page_path)
+    Db.Session.create(session_key, current_path)
 
     session_key
   end
 
   @doc """
-  Adds another visited page to a chain of visited pages by a particular user.
-
-  The chain must be smooth, there should not be any gaps in transitions. For example,
-  if the user who has the assigned session key jumps to another page by typing the path
-  in the address line of a browser, such transition should not be tracked. Such kind of transitions
-  doesn't bring any value to the prediction.
+  Adds the given page to the chain of visited pages by a particular user.
+  If the given session key belongs to an expired session, a new session gets started.
   """
-  def track(session_key, referral_path, current_path) do
-    case Db.Session.exist(session_key) do
-      true ->
-        Db.Session.track(session_key, referral_path, current_path)
-
-        { :ok }
-
-      false ->
-        { :new_session, start(current_path) }
+  def track(current_path, referral_path, session_key) do
+    if Db.Session.active?(session_key) do
+      Db.Session.track(session_key, referral_path, current_path)
+      session_key
+    else
+      track(current_path, referral_path, nil)
     end
   end
 

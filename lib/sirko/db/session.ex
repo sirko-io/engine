@@ -62,28 +62,23 @@ defmodule Sirko.Db.Session do
   end
 
   @doc """
-  Returns true if a session relation with the given key exist. Otherwise, false.
-
-  ## Example:
-
-      iex> session_key = "uniq-session-key"
-      iex> Sirko.Db.Session.create(session_key, "/list")
-      iex> Sirko.Db.Session.exist(session_key)
-      true
-
-      iex> Sirko.Db.Session.create("uniq-session-key", "/list")
-      iex> Sirko.Db.Session.exist("fake-session-key")
-      false
+  Returns true if a session relation with the given key exists and
+  it isn't expired. Otherwise, false.
   """
-  def exist(session_key) do
+  def active?(session_key) do
     query = """
-      MATCH ()-[s:SESSION {key: {key} }]->()
-      RETURN count(s) > 0 AS existence
+      MATCH ()-[s:SESSION { key: {key} }]->()
+      RETURN s AS last_hit
+      ORDER BY s.occurred_at DESC
+      LIMIT 1
     """
 
-    [%{"existence" => existence}] = Neo.query(query, %{ key: session_key })
-
-    existence
+    case Neo.query(query, %{ key: session_key }) do
+      [%{ "last_hit" => last_hit }] ->
+        !last_hit["expired_at"]
+      _ ->
+        false
+    end
   end
 
   @doc """

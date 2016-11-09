@@ -7,8 +7,8 @@ MERGE (exit:Page { exit: true })
 
 CREATE
   (start)  -[:SESSION { key: "skey10", count: 1, occurred_at: timestamp() - (3600 * 1000 * 10) }]->
-  (list)   -[:SESSION { key: "skey10", count: 2, occurred_at: timestamp() - (3600 * 1000 * 10) }]->
-  (popular)-[:SESSION { key: "skey10", count: 1, occurred_at: timestamp() - (3600 * 1000 * 10), expired_at: timestamp() - (3600 * 1000) }]->
+  (list)   -[:SESSION { key: "skey10", count: 2, occurred_at: timestamp() - (3600 * 1000 * 9) }]->
+  (popular)-[:SESSION { key: "skey10", count: 1, occurred_at: timestamp() - (3600 * 1000 * 8), expired_at: timestamp() - (3600 * 1000) }]->
   (exit)
 
 CREATE

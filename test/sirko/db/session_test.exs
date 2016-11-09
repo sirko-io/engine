@@ -129,6 +129,26 @@ defmodule Sirko.Db.SessionTest do
     end
   end
 
+  describe "active?/1" do
+    setup do
+      load_fixture("diverse_sessions")
+
+      :ok
+    end
+
+    test "returns true when there is an active session with the given key" do
+      assert Db.Session.active?("skey31") == true
+    end
+
+    test "returns false when there is not a session with the given key" do
+      assert Db.Session.active?("invalid-session-key") == false
+    end
+
+    test "returns false when a session with the given key got expired" do
+      assert Db.Session.active?("skey10") == false
+    end
+  end
+
   describe "all_inactive/1" do
     setup do
       load_fixture("diverse_sessions")
