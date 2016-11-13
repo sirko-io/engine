@@ -46,3 +46,7 @@ Execute the following command to launch the tests:
 ```
 $ mix test
 ```
+
+## License
+
+The project is distributed under the [GPLv3 license](https://github.com/dnesteryuk/sirko-engine/blob/master/LICENSE.txt).
