@@ -55,7 +55,7 @@ defmodule Sirko.Db.Session do
       WITH last(collect(n)) AS last_page
       MERGE (exit:Page { exit: true })
       CREATE (last_page)-[s:SESSION { key: {key} }]->(exit)
-      SET s.expired_at = timestamp()
+      SET s.expired_at = timestamp(), s.count = 1
     """
 
     Neo.query(query, %{ key: session_key })

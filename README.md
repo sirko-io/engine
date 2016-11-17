@@ -5,6 +5,7 @@
 A simple engine to track users' navigation on a site and predict a next page which most likely will be visited by the current user. As soon as we are able to predict the next page, we can prerender that page in order to provide better experience (an instant transition in some cases) to the user.
 
 A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
+How it works in the Chrome you can read [here](https://www.chromium.org/developers/design-documents/prerender).
 
 ## Development
 
@@ -30,13 +31,20 @@ The web interface of Neo4j is accessible on [http://localhost:7474](http://local
     $ mix deps.get
     ```
 
-3. Launch the app:
+3. Set a client url you expect to receive requests from:
+
+    ```
+    # .bashrc
+    export SIRKO_CLIENT_URL="http://localhost:3000"
+    ```
+
+4. Launch the app:
 
     ```
     $ iex -S mix
     ```
 
-  _Note:_ The [sirko client](https://github.com/dnesteryuk/sirko-client) has to be configured to send data to `http://localhost:4000`.
+5. Setup the [sirko client](https://github.com/dnesteryuk/sirko-client) for your project.
 
 ### Testing
 

@@ -165,7 +165,7 @@ defmodule Sirko.Db.SessionTest do
 
   defp count_expired_session(session_key) do
     query = """
-      MATCH (:Page { path: "/popular" })-[s:SESSION { key: {key} }]->(:Page { exit: true })
+      MATCH (:Page { path: "/popular" })-[s:SESSION { key: {key}, count: 1 }]->(:Page { exit: true })
       RETURN count(s) AS count
     """
 
