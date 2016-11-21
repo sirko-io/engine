@@ -32,9 +32,12 @@ defmodule Sirko.Web do
 
   get "/predict" do
     current_path = conn.query_params["cur"] |> extract_path
+    next_path = predict(current_path)
+
+    log_prediction(current_path, next_path)
 
     conn
-    |> send_resp(200, predict(current_path))
+    |> send_resp(200, next_path)
     |> halt
   end
 
@@ -46,5 +49,13 @@ defmodule Sirko.Web do
 
   defp predict(current_path) do
     Predictor.predict(current_path) || ""
+  end
+
+  defp log_prediction(current_path, "") do
+    Logger.info("No prediction for #{current_path}")
+  end
+
+  defp log_prediction(current_path, next_path) do
+    Logger.info("Predicted #{next_path} for #{current_path}")
   end
 end
