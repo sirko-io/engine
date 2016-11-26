@@ -87,15 +87,42 @@ defmodule Sirko.Db.Session do
   def all_inactive(time) do
     query = """
       MATCH ()-[s:SESSION]->()
+
       WITH s
       ORDER BY s.occurred_at
+
       WITH s.key AS key, last(collect(s)) AS last_hit
       WHERE last_hit.expired_at IS NULL AND timestamp() - last_hit.occurred_at > {time}
-      RETURN collect(last_hit.key) as keys
+
+      RETURN collect(key) as keys
     """
 
     [%{"keys" => keys}] = Neo.query(query, %{ time: time })
 
     keys
+  end
+
+  @doc """
+  Removes inactive sessions having one transition. A session is considered to be inactive
+  if the last transition happened more than the given time in milliseconds.
+  """
+  def remove_all_short(time) do
+    query = """
+      MATCH ()-[s:SESSION]->()
+
+      WITH s
+      ORDER BY s.occurred_at
+
+      WITH s.key AS key, collect(s) AS chain
+      WITH chain, last(chain) AS last_hit
+      WHERE last_hit.expired_at IS NULL AND timestamp() - last_hit.occurred_at > {time}
+
+      WITH last_hit, size(chain) AS chain_length
+      WHERE chain_length = 1
+
+      DETACH DELETE last_hit
+    """
+
+    Neo.query(query, %{ time: time })
   end
 end

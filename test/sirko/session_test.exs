@@ -104,6 +104,17 @@ defmodule Sirko.SessionTest do
       :ok
     end
 
+    test "removes short sessions" do
+      expire_all_inactive
+
+      query = """
+        MATCH ()-[s:SESSION { key: {key} }]->()
+        RETURN count(s) AS items_count
+      """
+
+      assert items_count(query, "skey22") == 0
+    end
+
     test "expires inactive sessions" do
       expire_all_inactive
 

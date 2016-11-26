@@ -28,6 +28,9 @@ CREATE
   (list) -[:SESSION { key: "skey21", count: 1, occurred_at: timestamp() - (3600 * 1000 * 2) }]->
   (popular)
 
+// Short session to be removed
+CREATE (start)-[:SESSION { key: "skey22", count: 1, occurred_at: timestamp() - (3600 * 1000 * 2) }]->(list)
+
 // Active sessions
 
 CREATE

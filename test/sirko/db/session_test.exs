@@ -159,7 +159,33 @@ defmodule Sirko.Db.SessionTest do
     test "returns keys of sessions which are inactive for 1 hr" do
       session_keys = Db.Session.all_inactive(60 * 60 * 1000)
 
-      assert session_keys == ["skey21", "skey20"]
+      assert session_keys == ["skey21", "skey20", "skey22"]
+    end
+  end
+
+  describe "remove_all_short/1" do
+    setup do
+      load_fixture("diverse_sessions")
+
+      :ok
+    end
+
+    test "removes sessions which are inactive for 1 hr and have only one transition" do
+      query = """
+        MATCH ()-[s:SESSION { key: {key} }]->()
+        RETURN count(s) AS count
+      """
+
+      [%{ "count" => count }] = execute_query(query, %{ key: "skey22" })
+
+      # make sure there is data for testing
+      assert count == 1
+
+      Db.Session.remove_all_short(60 * 60 * 1000)
+
+      [%{ "count" => count }] = execute_query(query, %{ key: "skey22" })
+
+      assert count == 0
     end
   end
 

@@ -49,8 +49,11 @@ defmodule Sirko.Session do
 
   @doc """
   Finds and expires sessions which are inactive for last `@inactive_session_in` milliseconds.
+  Short sessions get removed, they don't bring any value to the prediction model.
   """
   def expire_all_inactive do
+    Db.Session.remove_all_short(@inactive_session_in)
+
     session_keys = Db.Session.all_inactive(@inactive_session_in)
 
     Enum.each(session_keys, fn(key) -> expire(key) end)
