@@ -9,7 +9,10 @@ defmodule Sirko.Plugs.Cors do
 
   def init(opts), do: opts
 
-  def call(conn, opts) do
+  def call(conn, _ \\ []) do
+    # TODO: find a better way to pass parameters to the plug.
+    opts = Application.get_env(:sirko, :web)
+
     conn
     |> put_resp_header("access-control-allow-origin", Keyword.get(opts, :client_url))
     |> put_resp_header("access-control-allow-methods", @allowed_http_methods)

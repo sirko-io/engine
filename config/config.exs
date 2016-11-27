@@ -30,17 +30,24 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :neo4j_sips, Neo4j,
-  url: "http://localhost:7474",
+  url: System.get_env("NEO4J_URL") || "http://localhost:7474",
   pool_size: 5,
   max_overflow: 2,
   timeout: 30,
-  basic_auth: [username: "neo4j", password: "password"]
+  basic_auth: [
+    username: System.get_env("NEO4J_USERNAME"),
+    password: System.get_env("NEO4J_PASSWORD")
+  ]
 
 config :sirko, :web,
-  port: 4000,
-  client_url: "http://localhost:3000" # it is required to setup CORS
+  port: System.get_env("SIRKO_HTTP_PORT") || 4000,
+  client_url: System.get_env("SIRKO_CLIENT_URL") # the address of a site for which predictions should be made
 
 config :sirko, :scheduler,
   timeout: 60 * 60 * 1000 # how often the scheduler should close expired sessions
+
+config :logger, :console,
+  level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom,
+  format: "$date $time [$level] $metadata$message\n"
 
 import_config "#{Mix.env}.exs"

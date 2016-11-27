@@ -14,7 +14,7 @@ defmodule Sirko.Web do
   plug Plug.Logger
   plug :match
 
-  plug Sirko.Plugs.Cors, Application.get_env(:sirko, :web)
+  plug Sirko.Plugs.Cors
   plug Sirko.Plugs.Session
   plug :dispatch
 
@@ -26,6 +26,10 @@ defmodule Sirko.Web do
     cowboy_opts = [
       port: Keyword.get(opts, :port)
     ]
+
+    client_url = Keyword.get(opts, :client_url)
+
+    Logger.info("Expecting requests from #{client_url}")
 
     {:ok, _} = Plug.Adapters.Cowboy.http(Sirko.Web, [], cowboy_opts)
   end
