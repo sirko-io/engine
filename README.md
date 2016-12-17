@@ -8,6 +8,8 @@ As soon as we are able to predict the next page, we can prerender that page in o
 A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
 How it works in the Chrome you can read [here](https://www.chromium.org/developers/design-documents/prerender).
 
+[Try demo](http://demo.sirko.io)
+
 ## Usage
 
 Currently, the easiest way to install the application is to use a [docker image](https://github.com/dnesteryuk/sirko-docker). Although, if you are familiar with the Elixir language, you can compile the application and setup your server.
