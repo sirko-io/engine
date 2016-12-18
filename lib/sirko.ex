@@ -6,8 +6,16 @@ defmodule Sirko do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
+    # This line is required to fix an error which appears after executing:
+    #
+    #     :erlang.binary_to_existing_atom("bolt", :utf8)
+    #
+    # Probably, Neo4j Sips or its dependency tries to access the existing bolt prior to its creation.
+    # This issue was found in the CI, locally, it wasn't reproduced.
+    _bolt = :bolt
+
     children = [
-      worker(Neo4j.Sips,             [get_env(:neo4j_sips, Neo4j)]),
+      supervisor(Neo4j.Sips,         [get_env(:neo4j_sips, Neo4j)]),
       worker(Sirko.Web,              [get_env(:sirko, :web)]),
       worker(Sirko.Scheduler.Server, [get_env(:sirko, :scheduler)]),
     ]

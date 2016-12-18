@@ -19,12 +19,12 @@ Currently, the easiest way to install the application is to use a [docker image]
 ### Dependencies
 
  - [Elixir](http://elixir-lang.org/install.html) 1.3.*
- - [Neo4j](https://neo4j.com/download/) 3.0.*
+ - [Neo4j](https://neo4j.com/download/) 3.*
 
 If you use [docker](https://www.docker.com/), execute the following command to install Neo4j:
 
 ```
-$ sudo docker run --name neo4j-db -d --env NEO4J_AUTH=none --restart always --publish 7474:7474 neo4j:3.0.6
+$ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7474:7474 neo4j:3.1
 ```
 
 The web interface of Neo4j is accessible on [http://localhost:7474](http://localhost:7474).
