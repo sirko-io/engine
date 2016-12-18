@@ -8,4 +8,4 @@ services:
   - docker
 before_install:
   - docker pull neo4j:3.1
-  - docker run -p 7484:7474 -e NEO4J_AUTH=none -d neo4j
+  - docker run -p 7475:7474 -e NEO4J_AUTH=none -d neo4j

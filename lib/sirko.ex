@@ -15,9 +15,9 @@ defmodule Sirko do
     _bolt = :bolt
 
     children = [
-      supervisor(Neo4j.Sips,         [get_env(:neo4j_sips, Neo4j)]),
-      worker(Sirko.Web,              [get_env(:sirko, :web)]),
+      Sirko.Web.start_link(get_env(:sirko, :web)),
       worker(Sirko.Scheduler.Server, [get_env(:sirko, :scheduler)]),
+      supervisor(Neo4j.Sips,         [get_env(:neo4j_sips, Neo4j)])
     ]
 
     opts = [strategy: :one_for_one, name: Sirko.Supervisor]

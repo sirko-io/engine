@@ -6,34 +6,24 @@ defmodule Sirko.Scheduler.Server do
   @default_timeout 60 * 60 * 1000 # 1 hour
 
   @moduledoc """
-  This module is kind of a worker which gets launched each N secs and
+  This module is kind of a worker which gets launched each N milliseconds and
   expires stale sessions. The infinite loop is achieved by using the timeout
-  feature of GenServer (http://elixir-lang.org/docs/stable/elixir/GenServer.html#c:handle_cast/2).
-  Each N secs the handle_info callback gets called to expire stale sessions, once the job is done,
-  the server waits N secs to call the handle_info callback again.
+  feature of GenServer (https://hexdocs.pm/elixir/GenServer.html#c:init/1).
+  Each N milliseconds the handle_info callback gets called to expire stale sessions, once the job is done,
+  the server waits N milliseconds to call the handle_info callback again.
   """
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
-  def start_timeout(pid) do
-    GenServer.cast(pid, :start_timeout)
-  end
-
   def init(opts) do
-    start_timeout(self)
-
     timeout = Keyword.get(opts, :timeout, @default_timeout)
 
-    {:ok, timeout}
+    {:ok, timeout, timeout}
   end
 
   # Callbacks
-
-  def handle_cast(:start_timeout, timeout) do
-    handle_info(:timeout, timeout)
-  end
 
   def handle_info(:timeout, timeout) do
     expire_sessions

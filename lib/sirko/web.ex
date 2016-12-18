@@ -31,7 +31,7 @@ defmodule Sirko.Web do
 
     Logger.info("Expecting requests from #{client_url}")
 
-    {:ok, _} = Plug.Adapters.Cowboy.http(Sirko.Web, [], cowboy_opts)
+    Plug.Adapters.Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
   end
 
   get "/predict" do
