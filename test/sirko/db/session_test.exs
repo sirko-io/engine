@@ -9,7 +9,7 @@ defmodule Sirko.Db.SessionTest do
 
   setup do
     on_exit fn ->
-      cleanup_db
+      cleanup_db()
     end
 
     :ok
@@ -43,7 +43,7 @@ defmodule Sirko.Db.SessionTest do
       Db.Session.create("skey1", "/list")
       Db.Session.create("skey2", "/list")
 
-      assert count_pages == 2
+      assert count_pages() == 2
     end
   end
 
@@ -87,7 +87,7 @@ defmodule Sirko.Db.SessionTest do
       Db.Session.track("skey1", referral_path, "/list")
       Db.Session.track("skey2", referral_path, "/list")
 
-      assert count_pages == 2
+      assert count_pages() == 2
     end
 
     test "updates the count field for the relation when the relation with the given key exists", %{ referral_path: referral_path } do

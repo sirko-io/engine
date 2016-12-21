@@ -26,7 +26,7 @@ defmodule Sirko.Scheduler.Server do
   # Callbacks
 
   def handle_info(:timeout, timeout) do
-    expire_sessions
+    expire_sessions()
 
     {:noreply, timeout, timeout}
   end

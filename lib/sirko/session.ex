@@ -18,7 +18,7 @@ defmodule Sirko.Session do
   which is used later in order to identify a being tracked session.
   """
   def track(current_path, _, nil) do
-    session_key = generate_key
+    session_key = generate_key()
 
     Db.Session.create(session_key, current_path)
 

@@ -12,7 +12,7 @@ defmodule Sirko.WebTest do
     load_fixture("transitions")
 
     on_exit fn ->
-      cleanup_db
+      cleanup_db()
     end
 
     :ok

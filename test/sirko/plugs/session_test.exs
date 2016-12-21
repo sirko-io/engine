@@ -8,7 +8,7 @@ defmodule Sirko.Plugs.SessionTest do
 
   setup do
     on_exit fn ->
-      cleanup_db
+      cleanup_db()
     end
 
     :ok

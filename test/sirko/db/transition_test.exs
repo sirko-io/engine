@@ -9,7 +9,7 @@ defmodule Sirko.Db.TransitionTest do
 
   setup do
     on_exit fn ->
-      cleanup_db
+      cleanup_db()
     end
 
     :ok
@@ -27,7 +27,7 @@ defmodule Sirko.Db.TransitionTest do
     test "records transitions between pages", %{ session_key: session_key } do
       Db.Transition.track(session_key)
 
-      [start_list, list_popular, popupar_exit] = all_transitions
+      [start_list, list_popular, popupar_exit] = all_transitions()
 
       assert start_list["count"] == 1
       assert start_list["updated_at"] != nil

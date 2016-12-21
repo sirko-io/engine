@@ -18,7 +18,7 @@ Currently, the easiest way to install the application is to use a [docker image]
 
 ### Dependencies
 
- - [Elixir](http://elixir-lang.org/install.html) 1.3.*
+ - [Elixir](http://elixir-lang.org/install.html) 1.3.* or 1.4.*
  - [Neo4j](https://neo4j.com/download/) 3.*
 
 If you use [docker](https://www.docker.com/), execute the following command to install Neo4j:

@@ -8,7 +8,7 @@ defmodule Sirko.SessionTest do
 
   setup do
     on_exit fn ->
-      cleanup_db
+      cleanup_db()
     end
 
     :ok
@@ -105,7 +105,7 @@ defmodule Sirko.SessionTest do
     end
 
     test "removes short sessions" do
-      expire_all_inactive
+      expire_all_inactive()
 
       query = """
         MATCH ()-[s:SESSION { key: {key} }]->()
@@ -116,7 +116,7 @@ defmodule Sirko.SessionTest do
     end
 
     test "expires inactive sessions" do
-      expire_all_inactive
+      expire_all_inactive()
 
       query = """
         MATCH ()-[s:SESSION]->(:Page { exit: true })
@@ -127,7 +127,7 @@ defmodule Sirko.SessionTest do
     end
 
     test "tracks transitions" do
-      expire_all_inactive
+      expire_all_inactive()
 
       query = """
         MATCH ()-[t:TRANSITION]->(:Page { exit: true })
