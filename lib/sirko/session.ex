@@ -54,9 +54,8 @@ defmodule Sirko.Session do
   def expire_all_inactive do
     Db.Session.remove_all_short(@inactive_session_in)
 
-    session_keys = Db.Session.all_inactive(@inactive_session_in)
-
-    Enum.each(session_keys, fn(key) -> expire(key) end)
+    Db.Session.all_inactive(@inactive_session_in)
+    |> Enum.each(fn(key) -> expire(key) end)
   end
 
   defp generate_key do
