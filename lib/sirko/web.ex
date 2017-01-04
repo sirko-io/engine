@@ -14,6 +14,7 @@ defmodule Sirko.Web do
   plug Plug.Logger
   plug :match
 
+  plug Sirko.Plugs.Access
   plug Sirko.Plugs.Cors
   plug Sirko.Plugs.Session
   plug :dispatch

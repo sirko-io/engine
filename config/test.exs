@@ -5,7 +5,7 @@ config :neo4j_sips, Neo4j,
 
 config :sirko, :web,
   port: 4001,
-  client_url: "http://test.localhost:3000"
+  client_url: "http://app.io"
 
 config :logger, :console,
   level: :error
