@@ -4,6 +4,20 @@ MERGE (popular:Page { path: "/popular" })
 MERGE (about:Page { path: "/about" })
 MERGE (exit:Page { exit: true })
 
+// Stale sessions
+
+CREATE
+  (start)  -[:SESSION { key: "skey1", count: 1, occurred_at: timestamp() - (3600 * 1000 * 24 * 7) }]->
+  (list)   -[:SESSION { key: "skey1", count: 2, occurred_at: timestamp() - (3600 * 1000 * 24 * 7) }]->
+  (popular)-[:SESSION { key: "skey1", count: 3, occurred_at: timestamp() - (3600 * 1000 * 24 * 7), expired_at: timestamp() - (3600 * 1000 * 24 * 7) }]->
+  (exit)
+
+CREATE
+  (start)-[:SESSION { key: "skey2", count: 1, occurred_at: timestamp() - (3600 * 1000 * 24 * 7) }]->
+  (list) -[:SESSION { key: "skey2", count: 1, occurred_at: timestamp() - (3600 * 1000  * 24 * 7) }]->
+  (popular)-[:SESSION { key: "skey2", count: 1, occurred_at: timestamp() - (3600 * 1000 * 24 * 7), expired_at: timestamp() - (3600 * 1000 * 24 * 7) }]->
+  (exit)
+
 // Expired sessions
 
 CREATE

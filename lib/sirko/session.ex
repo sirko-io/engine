@@ -11,7 +11,7 @@ defmodule Sirko.Session do
 
   @default_key_length 32
 
-  @inactive_session_in 60 * 60 * 1000 # 1 hour
+  @inactive_session_in 3600 * 1000 # 1 hour
 
   @chunk_sessions_on 100 # how many session keys must be process in one cypher query
 
@@ -50,7 +50,7 @@ defmodule Sirko.Session do
   end
 
   @doc """
-  Finds and expires sessions which are inactive for last `@inactive_session_in` milliseconds.
+  Finds and expires sessions which are inactive for `@inactive_session_in` milliseconds.
   Short sessions get removed, they don't bring any value to the prediction model.
   """
   def expire_all_inactive do

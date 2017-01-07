@@ -26,6 +26,21 @@ defmodule Sirko.Db.Transition do
   end
 
   @doc """
+  Finds sessions with the given keys and subtracts their counts from
+  counts of corresponding transactions.
+  """
+  def exclude_sessions(session_keys) do
+    query = """
+      MATCH (a)-[s:SESSION]->(b)
+      MATCH (a)-[t:TRANSITION]->(b)
+      WHERE s.key IN {session_keys}
+      SET t.count = t.count - s.count
+    """
+
+    Neo.query(query, %{ session_keys: session_keys })
+  end
+
+  @doc """
   Returns the path of a page which most likely will be visited by a user.
   """
   def predict(current_path) do
@@ -33,7 +48,7 @@ defmodule Sirko.Db.Transition do
       MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(next_page:Page)
       RETURN next_page.path AS next_path
       ORDER BY t.count DESC, t.updated_at DESC
-      LIMIT 1;
+      LIMIT 1
     """
 
     case Neo.query(query, %{ current_path: current_path }) do
@@ -42,5 +57,18 @@ defmodule Sirko.Db.Transition do
       _ ->
         nil
     end
+  end
+
+  @doc """
+  Removes all transitions which aren't in use anymore (they have 0 count).
+  """
+  def remove_idle do
+    query = """
+      MATCH ()-[t:TRANSITION]->()
+      WHERE t.count = 0
+      DELETE t
+    """
+
+    Neo.query(query)
   end
 end

@@ -123,7 +123,7 @@ defmodule Sirko.SessionTest do
         RETURN count(s) AS items_count
       """
 
-      assert items_count(query) == 5
+      assert items_count(query) == 7
     end
 
     test "tracks transitions" do

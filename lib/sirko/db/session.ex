@@ -137,4 +137,34 @@ defmodule Sirko.Db.Session do
 
     Neo.query(query, %{ time: time })
   end
+
+  @doc """
+  Returns a list of session keys which are expired for the given number of milliseconds.
+  """
+  def all_stale(time) do
+    query = """
+      MATCH ()-[s:SESSION]->()
+      WHERE timestamp() - s.expired_at > {time}
+      RETURN collect(s.key) as keys
+    """
+
+    [%{"keys" => keys}] = Neo.query(query, %{ time: time })
+
+    keys
+  end
+
+  @doc """
+  Removes sessions which are expired for the given number of milliseconds.
+  """
+  def remove_stale(time) do
+    query = """
+      MATCH ()-[s:SESSION]->()
+      WHERE timestamp() - s.expired_at > {time}
+
+      MATCH ()-[sess:SESSION {key: s.key}]->()
+      DELETE sess
+    """
+
+    Neo.query(query, %{ time: time })
+  end
 end

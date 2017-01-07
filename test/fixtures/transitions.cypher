@@ -3,6 +3,8 @@ MERGE (list:Page { path: "/list" })
 MERGE (popular:Page { path: "/popular" })
 MERGE (details:Page { path: "/details" })
 MERGE (about:Page { path: "/about" })
+MERGE (lonely:Page { path: "/lonely" })
+MERGE (single:Page { path: "/single" })
 MERGE (exit:Page { exit: true })
 
 CREATE
@@ -15,3 +17,6 @@ CREATE
   (popular)-[:TRANSITION { count: 6}]->(exit),
   (about)-[:TRANSITION { count: 2, updated_at: timestamp() }]->(popular),
   (about)-[:TRANSITION { count: 2, updated_at: timestamp() - 1000 }]->(details)
+
+CREATE
+  (start)-[:TRANSITION { count: 0, updated_at: timestamp() }]->(single)

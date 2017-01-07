@@ -74,6 +74,29 @@ defmodule Sirko.Db.TransitionTest do
     end
   end
 
+  describe "exclude_sessions/1" do
+    setup do
+      session_keys = ["skey1", "skey2"]
+
+      load_fixture("diverse_sessions")
+      load_fixture("transitions")
+
+      {:ok, [session_keys: session_keys]}
+    end
+
+    test "decreases counts for transitions matching the corresponding sessions", %{ session_keys: session_keys } do
+      initial_transition = transition_between_paths("/list", "/popular")
+
+      assert initial_transition["count"] == 4
+
+      Db.Transition.exclude_sessions(session_keys)
+
+      updated_transition = transition_between_paths("/list", "/popular")
+
+      assert updated_transition["count"] == 1
+    end
+  end
+
   describe "predict/1" do
     setup do
       load_fixture("transitions")
@@ -94,27 +117,29 @@ defmodule Sirko.Db.TransitionTest do
     end
   end
 
-  defp transition_between_pages({a_prop, a_val}, {b_prop, b_val}) do
-    query = """
-      MATCH (a:Page)-[transition:TRANSITION]->(b:Page)
-      WHERE a[{a_prop}] = {a_val} AND b[{b_prop}] = {b_val}
+  describe "remove_idle/0" do
+    setup do
+      load_fixture("transitions")
 
-      RETURN transition
-    """
+      :ok
+    end
 
-    params = %{
-      "a_prop" => a_prop,
-      "a_val"  => a_val,
-      "b_prop" => b_prop,
-      "b_val"  => b_val
-    }
+    test "removes idle transitions" do
+      query = """
+        MATCH ()-[t:TRANSITION]->()
+        WHERE t.count = 0
+        RETURN count(t) > 0 AS exist
+      """
 
-    [%{"transition" => transition}] = execute_query(query, params)
+      [%{"exist" => exist}] = execute_query(query)
 
-    transition
-  end
+      assert exist == true
 
-  defp transition_between_paths(a_path, b_path) do
-    transition_between_pages({"path", a_path}, {"path", b_path})
+      Db.Transition.remove_idle()
+
+      [%{"exist" => exist}] = execute_query(query)
+
+      assert exist == false
+    end
   end
 end

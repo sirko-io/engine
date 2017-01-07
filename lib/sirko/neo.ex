@@ -1,11 +1,11 @@
 defmodule Sirko.Neo do
-  require Logger
-
-  alias Neo4j.Sips, as: Neo4j
-
   @moduledoc """
   A simple wrapper for Neo4j to execute queries
   """
+
+  require Logger
+
+  alias Neo4j.Sips, as: Neo4j
 
   def query(query, params \\ %{ }) do
     case Neo4j.query(Neo4j.conn, query, params) do

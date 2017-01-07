@@ -44,7 +44,8 @@ config :sirko, :web,
   client_url: System.get_env("SIRKO_CLIENT_URL") # the address of a site for which predictions should be made
 
 config :sirko, :scheduler,
-  timeout: 60 * 60 * 1000 # how often the scheduler should close expired sessions
+  expire_sessions_in: 3600 * 1000, # how often the scheduler should be launched to expire inactive sessions
+  remove_stale_data_in: 3600 * 1000 * 24 # how often the scheduler should be launched to remove stale data
 
 config :logger, :console,
   level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom,

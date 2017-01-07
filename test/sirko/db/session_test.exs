@@ -123,12 +123,12 @@ defmodule Sirko.Db.SessionTest do
     test "creates relations to the exit point", %{ session_keys: session_keys } do
       [s_key1, s_key2] = session_keys
 
-      assert count_expired_session(s_key1) == 1
-      assert count_expired_session(s_key2) == 1
+      assert count_expired_sessions(s_key1) == 1
+      assert count_expired_sessions(s_key2) == 1
     end
 
     test "does not affect foreign sessions" do
-      assert count_expired_session("skey22") == 0
+      assert count_expired_sessions("skey22") == 0
     end
   end
 
@@ -160,7 +160,7 @@ defmodule Sirko.Db.SessionTest do
     end
 
     test "returns keys of sessions which are inactive for 1 hr" do
-      session_keys = Db.Session.all_inactive(60 * 60 * 1000)
+      session_keys = Db.Session.all_inactive(3600 * 1000)
 
       assert session_keys |> Enum.sort == ["skey20", "skey21", "skey22", "skey23"]
     end
@@ -174,39 +174,57 @@ defmodule Sirko.Db.SessionTest do
     end
 
     test "removes sessions which are inactive for 1 hr and have only one transition" do
-      query = """
-        MATCH ()-[s:SESSION { key: {key} }]->()
-        RETURN count(s) AS count
-      """
-
-      [%{ "count" => count }] = execute_query(query, %{ key: "skey23" })
-
       # make sure there is data for testing
-      assert count == 1
+      assert count_sessions("skey23") == 1
 
-      Db.Session.remove_all_short(60 * 60 * 1000)
+      Db.Session.remove_all_short(3600 * 1000)
 
-      [%{ "count" => count }] = execute_query(query, %{ key: "skey23" })
-
-      assert count == 0
+      assert count_sessions("skey23") == 0
     end
   end
 
-  defp count_expired_session(session_key) do
+  describe "all_stale/1" do
+    setup do
+      load_fixture("diverse_sessions")
+
+      :ok
+    end
+
+    test "returns keys of sessions which expired 7 days ago" do
+      session_keys = Db.Session.all_stale(3600 * 1000 * 24 * 7)
+
+      assert session_keys |> Enum.sort == ["skey1", "skey2"]
+    end
+  end
+
+  describe "remove_stale/1" do
+    setup do
+      load_fixture("diverse_sessions")
+
+      :ok
+    end
+
+    test "removes sessions which expired 7 days ago" do
+      Db.Session.remove_stale(3600 * 1000 * 24 * 7)
+
+      assert count_sessions("skey1") == 0
+      assert count_sessions("skey2") == 0
+    end
+
+    test "does not affect other sessions" do
+      Db.Session.remove_stale(3600 * 1000 * 24 * 7)
+
+      assert count_sessions("skey21") == 2
+    end
+  end
+
+  defp count_expired_sessions(session_key) do
     query = """
       MATCH (:Page { path: "/popular" })-[s:SESSION { key: {key}, count: 1 }]->(:Page { exit: true })
       RETURN count(s) AS count
     """
 
     [%{ "count" => count }] = execute_query(query, %{ key: session_key })
-
-    count
-  end
-
-  defp count_pages do
-    query = "MATCH (n:Page) RETURN count(n) AS nodes_count"
-
-    [%{ "nodes_count" => count }] = execute_query(query)
 
     count
   end
