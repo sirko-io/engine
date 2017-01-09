@@ -46,19 +46,31 @@ defmodule Sirko.Db.Session do
   end
 
   @doc """
-  Creates a relation between the last visited page by a user having the given session key
-  and the exit point. After that, the whole session is treated as expired.
+  A session is treated as expired when it is connected to the exit point. Therefore,
+  this method iterates through the given list of session keys and creates relations between
+  last visited pages and the exit point.
   """
-  def expire(session_key) do
+  def expire(session_keys) do
     query = """
-      MATCH (:Page { start: true })-[:SESSION * { key: {key} }]->(n:Page)
-      WITH last(collect(n)) AS last_page
+      MATCH ()-[s:SESSION]->()
+      WHERE s.key IN {keys}
+
+      WITH s
+      ORDER BY s.occurred_at
+
+      WITH s.key AS key, last(collect(s)) AS last_hit
+
+      WITH key, endNode(last_hit) AS last_page
+
       MERGE (exit:Page { exit: true })
-      CREATE (last_page)-[s:SESSION { key: {key} }]->(exit)
-      SET s.expired_at = timestamp(), s.count = 1
+
+      CREATE (last_page)-[new_s:SESSION]->(exit)
+      SET new_s.key = key,
+          new_s.expired_at = timestamp(),
+          new_s.count = 1
     """
 
-    Neo.query(query, %{ key: session_key })
+    Neo.query(query, %{ keys: session_keys })
   end
 
   @doc """

@@ -13,6 +13,8 @@ defmodule Sirko.Session do
 
   @inactive_session_in 60 * 60 * 1000 # 1 hour
 
+  @chunk_sessions_on 100 # how many session keys must be process in one cypher query
+
   @doc """
   Creates a new session relation in the DB and returns a unique session key
   which is used later in order to identify a being tracked session.
@@ -39,12 +41,12 @@ defmodule Sirko.Session do
   end
 
   @doc """
-  Expires a session having the given key and increases counts on transition relations which
-  link visited pages within the session.
+  Expires sessions found by the given list of session keys,
+  increases counts on transition relations which link visited pages within the sessions.
   """
-  def expire(session_key) do
-    Db.Session.expire(session_key)
-    Db.Transition.track(session_key)
+  def expire(session_keys) do
+    Db.Session.expire(session_keys)
+    Db.Transition.track(session_keys)
   end
 
   @doc """
@@ -55,7 +57,8 @@ defmodule Sirko.Session do
     Db.Session.remove_all_short(@inactive_session_in)
 
     Db.Session.all_inactive(@inactive_session_in)
-    |> Enum.each(fn(key) -> expire(key) end)
+    |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
+    |> Enum.each(fn(keys) -> expire(keys) end)
   end
 
   defp generate_key do

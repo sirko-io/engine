@@ -2,18 +2,27 @@ defmodule Sirko.Db.Transition do
   alias Sirko.Neo, as: Neo
 
   @doc """
-  Records transitions between pages supplied by the given session.
+  Iterates through the given list of session keys and updates counts of visits
+  for transition relations which correspond the sessions.
   """
-  def track(session_key) do
+  def track(session_keys) do
     query = """
-      MATCH (a)-[s:SESSION { key: {session_key} }]->(b)
+      MATCH (a)-[s:SESSION]->(b)
+      WHERE s.key IN {keys}
+
       MERGE (a)-[t:TRANSITION]->(b)
-      ON CREATE SET t.count = s.count
-      ON MATCH SET t.count = t.count + s.count
-      SET t.updated_at = timestamp()
+
+      WITH t, s, CASE
+        WHEN t.updated_at > s.occurred_at THEN t.updated_at
+        WHEN NOT exists(s.occurred_at) THEN s.expired_at
+        ELSE s.occurred_at
+      END AS updated_at
+
+      SET t.count = coalesce(t.count, 0) + s.count,
+          t.updated_at = updated_at
     """
 
-    Neo.query(query, %{ session_key: session_key })
+    Neo.query(query, %{ keys: session_keys })
   end
 
   @doc """

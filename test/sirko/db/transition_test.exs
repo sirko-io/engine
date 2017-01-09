@@ -17,45 +17,54 @@ defmodule Sirko.Db.TransitionTest do
 
   describe "track/1" do
     setup do
-      session_key = "skey10"
+      session_keys = ["skey10", "skey11"]
 
       load_fixture("diverse_sessions")
 
-      {:ok, [session_key: session_key]}
+      {:ok, [session_keys: session_keys]}
     end
 
-    test "records transitions between pages", %{ session_key: session_key } do
-      Db.Transition.track(session_key)
+    test "records transitions between pages", %{ session_keys: session_keys } do
+      Db.Transition.track(session_keys)
 
-      [start_list, list_popular, popupar_exit] = all_transitions()
+      start_list = transition_between_pages({"start", true}, {"path", "/list"})
 
-      assert start_list["count"] == 1
+      assert start_list["count"] == 2
       assert start_list["updated_at"] != nil
 
-      assert list_popular["count"] == 2
+      list_popular = transition_between_paths("/list", "/popular")
+
+      assert list_popular["count"] == 3
       assert list_popular["updated_at"] != nil
 
-      assert popupar_exit["count"] == 1
-      assert popupar_exit["updated_at"] != nil
+      list_exit = transition_between_pages({"path", "/list"}, {"exit", true})
+
+      assert list_exit["count"] == 1
+      assert list_exit["updated_at"] != nil
+
+      popular_exit = transition_between_pages({"path", "/popular"}, {"exit", true})
+
+      assert popular_exit["count"] == 1
+      assert popular_exit["updated_at"] != nil
     end
 
-    test "increases counts for a transition when it exists", %{ session_key: session_key } do
+    test "increases counts for a transition when it exists", %{ session_keys: session_keys } do
       load_fixture("transitions")
 
       initial_transition = transition_between_paths("/list", "/popular")
 
-      Db.Transition.track(session_key)
+      Db.Transition.track(session_keys)
 
       updated_transition = transition_between_paths("/list", "/popular")
 
-      assert updated_transition["count"] == 6
+      assert updated_transition["count"] == 7
       assert updated_transition["updated_at"] != initial_transition["updated_at"]
     end
 
-    test "does not affect transitions which does not belong to the given session", %{ session_key: session_key } do
+    test "does not affect transitions which does not belong to the found session", %{ session_keys: session_keys } do
       load_fixture("transitions")
 
-      Db.Transition.track(session_key)
+      Db.Transition.track(session_keys)
 
       list_details = transition_between_paths("/list", "/details")
       about_popular = transition_between_paths("/about", "/popular")
@@ -85,25 +94,27 @@ defmodule Sirko.Db.TransitionTest do
     end
   end
 
-  defp all_transitions do
+  defp transition_between_pages({a_prop, a_val}, {b_prop, b_val}) do
     query = """
-      MATCH (:Page { start: true })-[transitions:TRANSITION *]->(:Page { exit: true })
-      RETURN transitions
-    """
+      MATCH (a:Page)-[transition:TRANSITION]->(b:Page)
+      WHERE a[{a_prop}] = {a_val} AND b[{b_prop}] = {b_val}
 
-    [%{"transitions" => transitions}] = execute_query(query)
-
-    transitions
-  end
-
-  defp transition_between_paths(path_a, path_b) do
-    query = """
-      MATCH (:Page { path: {a} })-[transition:TRANSITION]->(:Page { path: {b} })
       RETURN transition
     """
 
-    [%{"transition" => transition}] = execute_query(query, %{ "a" => path_a, "b" => path_b })
+    params = %{
+      "a_prop" => a_prop,
+      "a_val"  => a_val,
+      "b_prop" => b_prop,
+      "b_val"  => b_val
+    }
+
+    [%{"transition" => transition}] = execute_query(query, params)
 
     transition
+  end
+
+  defp transition_between_paths(a_path, b_path) do
+    transition_between_pages({"path", a_path}, {"path", b_path})
   end
 end

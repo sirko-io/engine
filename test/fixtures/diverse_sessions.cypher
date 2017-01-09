@@ -1,13 +1,14 @@
 MERGE (start:Page { start: true })
 MERGE (list:Page { path: "/list" })
 MERGE (popular:Page { path: "/popular" })
+MERGE (about:Page { path: "/about" })
 MERGE (exit:Page { exit: true })
 
 // Expired sessions
 
 CREATE
   (start)  -[:SESSION { key: "skey10", count: 1, occurred_at: timestamp() - (3600 * 1000 * 10) }]->
-  (list)   -[:SESSION { key: "skey10", count: 2, occurred_at: timestamp() - (3600 * 1000 * 9) }]->
+  (list)   -[:SESSION { key: "skey10", count: 3, occurred_at: timestamp() - (3600 * 1000 * 9) }]->
   (popular)-[:SESSION { key: "skey10", count: 1, occurred_at: timestamp() - (3600 * 1000 * 8), expired_at: timestamp() - (3600 * 1000) }]->
   (exit)
 
@@ -28,8 +29,13 @@ CREATE
   (list) -[:SESSION { key: "skey21", count: 1, occurred_at: timestamp() - (3600 * 1000 * 2) }]->
   (popular)
 
+CREATE
+  (start)-[:SESSION { key: "skey22", count: 1, occurred_at: timestamp() - (3600 * 1000 * 4) }]->
+  (list) -[:SESSION { key: "skey22", count: 1, occurred_at: timestamp() - (3600 * 1000 * 3) }]->
+  (about)
+
 // Short session to be removed
-CREATE (start)-[:SESSION { key: "skey22", count: 1, occurred_at: timestamp() - (3600 * 1000 * 2) }]->(list)
+CREATE (start)-[:SESSION { key: "skey23", count: 1, occurred_at: timestamp() - (3600 * 1000 * 2) }]->(list)
 
 // Active sessions
 

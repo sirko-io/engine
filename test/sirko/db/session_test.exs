@@ -111,21 +111,24 @@ defmodule Sirko.Db.SessionTest do
 
   describe "expire/1" do
     setup do
-      session_key = "skey20"
+      session_keys = ["skey20", "skey21"]
 
       load_fixture("diverse_sessions")
 
-      Db.Session.expire(session_key)
+      Db.Session.expire(session_keys)
 
-      { :ok, [session_key: session_key] }
+      { :ok, [session_keys: session_keys] }
     end
 
-    test "creates a relation to the exit point", %{ session_key: session_key } do
-      assert count_expired_session(session_key) == 1
+    test "creates relations to the exit point", %{ session_keys: session_keys } do
+      [s_key1, s_key2] = session_keys
+
+      assert count_expired_session(s_key1) == 1
+      assert count_expired_session(s_key2) == 1
     end
 
     test "does not affect foreign sessions" do
-      assert count_expired_session("skey21") == 0
+      assert count_expired_session("skey22") == 0
     end
   end
 
@@ -159,7 +162,7 @@ defmodule Sirko.Db.SessionTest do
     test "returns keys of sessions which are inactive for 1 hr" do
       session_keys = Db.Session.all_inactive(60 * 60 * 1000)
 
-      assert session_keys == ["skey21", "skey20", "skey22"]
+      assert session_keys |> Enum.sort == ["skey20", "skey21", "skey22", "skey23"]
     end
   end
 
@@ -176,14 +179,14 @@ defmodule Sirko.Db.SessionTest do
         RETURN count(s) AS count
       """
 
-      [%{ "count" => count }] = execute_query(query, %{ key: "skey22" })
+      [%{ "count" => count }] = execute_query(query, %{ key: "skey23" })
 
       # make sure there is data for testing
       assert count == 1
 
       Db.Session.remove_all_short(60 * 60 * 1000)
 
-      [%{ "count" => count }] = execute_query(query, %{ key: "skey22" })
+      [%{ "count" => count }] = execute_query(query, %{ key: "skey23" })
 
       assert count == 0
     end
