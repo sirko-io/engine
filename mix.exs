@@ -17,7 +17,7 @@ defmodule Sirko.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      applications: [:logger, :cowboy, :plug, :neo4j_sips],
+      applications: [:logger, :cowboy, :plug, :neo4j_sips, :rollbax],
       mod: {Sirko, []}
     ]
   end
@@ -35,7 +35,8 @@ defmodule Sirko.Mixfile do
     [
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.2"},
-      {:neo4j_sips, "~> 0.2"}
+      {:neo4j_sips, "~> 0.2"},
+      {:rollbax, "~> 0.8"}
     ]
   end
 end

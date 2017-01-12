@@ -51,4 +51,9 @@ config :logger, :console,
   level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom,
   format: "$date $time [$level] $metadata$message\n"
 
+config :rollbax,
+  environment: Mix.env |> Atom.to_string,
+  access_token: "", # give it an empty string to avoid failures in the dev and test env
+  enabled: false
+
 import_config "#{Mix.env}.exs"
