@@ -4,7 +4,7 @@ defmodule Sirko.Plugs.SessionTest do
 
   import Support.Neo4jHelpers
 
-  import Sirko.Plugs.Session, only: [ call: 1 ]
+  import Sirko.Plugs.Session, only: [ call: 2 ]
 
   setup do
     on_exit fn ->
@@ -15,15 +15,21 @@ defmodule Sirko.Plugs.SessionTest do
   end
 
   test "assigns a session key" do
-    conn = conn(:get, "/predict?cur=http://app.io/list") |> call
+    conn = conn(:get, "/predict?cur=http://app.io/list") |> call(on: "/predict")
 
     assert conn.resp_cookies["_spio_skey"][:value] != nil
     assert conn.resp_cookies["_spio_skey"][:max_age] == 3600
   end
 
   test "rejects requests without the cur parameter" do
-    conn = conn(:get, "/predict") |> call
+    conn = conn(:get, "/predict") |> call(on: "/predict")
 
     assert conn.status == 422
+  end
+
+  test "doesn't do anything when the given path doesn't match the expected one" do
+    conn = conn(:get, "/predict") |> call(on: "/expectation")
+
+    assert conn.status == nil
   end
 end

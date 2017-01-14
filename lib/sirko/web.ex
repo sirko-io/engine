@@ -12,11 +12,16 @@ defmodule Sirko.Web do
   alias Sirko.Predictor
 
   plug Plug.Logger
-  plug :match
+  plug Plug.Static,
+    at: "assets",
+    from: :sirko
 
   plug Sirko.Plugs.Access
   plug Sirko.Plugs.Cors
-  plug Sirko.Plugs.Session
+  plug Sirko.Plugs.Session,
+    on: "/predict"
+
+  plug :match
   plug :dispatch
 
   def init(opts) do
@@ -44,6 +49,19 @@ defmodule Sirko.Web do
     conn
     |> send_resp(200, next_path)
     |> halt
+  end
+
+  if Mix.env == :dev do
+    # This action is only require for the dev environment. The prod environment contains
+    # the js client in the priv/static folder. Hence, the Plug.Static is able to serve it.
+    get "/assets/client.js" do
+      {:ok, content} = File.read("node_modules/sirko-client/dist/sirko.js")
+
+      conn
+      |> put_resp_content_type("application/javascript")
+      |> send_resp(200, content)
+      |> halt
+    end
   end
 
   match _ do

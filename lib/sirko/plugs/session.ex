@@ -20,7 +20,11 @@ defmodule Sirko.Plugs.Session do
 
   def init(opts), do: opts
 
-  def call(conn, _ \\ []) do
+  def call(conn, opts \\ []) do
+    match(conn, conn.request_path, Keyword.get(opts, :on))
+  end
+
+  defp match(conn, given_path, expected_path) when given_path == expected_path do
     conn = fetch_query_params(conn) |> fetch_cookies
 
     referral_path = conn.query_params["ref"] |> extract_path
@@ -30,6 +34,8 @@ defmodule Sirko.Plugs.Session do
 
     track(conn, current_path, referral_path, session_key)
   end
+
+  defp match(conn, _, _), do: conn
 
   # TODO: move to some validation plug?
   defp track(conn, nil, _, _) do

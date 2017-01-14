@@ -20,6 +20,7 @@ Currently, the easiest way to install the application is to use a [docker image]
 
  - [Elixir](http://elixir-lang.org/install.html) 1.3.* or 1.4.*
  - [Neo4j](https://neo4j.com/download/) 3.*
+ - [Npm](https://npmjs.com)
 
 If you use [docker](https://www.docker.com/), execute the following command to install Neo4j:
 
@@ -36,9 +37,10 @@ The web interface of Neo4j is accessible on [http://localhost:7474](http://local
 
     ```
     $ mix deps.get
+    $ npm install
     ```
 
-3. Set a client url you expect to receive requests from:
+3. Set a url to your site:
 
     ```
     # .bashrc
@@ -51,7 +53,19 @@ The web interface of Neo4j is accessible on [http://localhost:7474](http://local
     $ iex -S mix
     ```
 
-5. Setup the [sirko client](https://github.com/dnesteryuk/sirko-client) for your project.
+5. Add the following code before `</head>`:
+
+    ```html
+    <script>
+      window.sirko=window.sirko||{};
+      sirko.s={engineUrl: 'http://localhost:4000'};
+      sirko.r='REQUEST REFERER'; // replace with your code to get a HTTP REFERER
+    </script>
+
+    <script async src="http://localhost:4000/assets/client.js"></script>
+    ```
+
+**Note:** If you don't have a good site to check your changes, [this demo](https://github.com/dnesteryuk/sirko-demo) might be useful.
 
 ### Testing
 
