@@ -11,7 +11,7 @@ https://github.com/bitwalker/conform.
       commented: false,
       datatype: :binary,
       default: "http://localhost:7474",
-      doc: "A url to a Neo4j server",
+      doc: "A url to a Neo4j server. IMPORTANT: The url mustn't contain `db/data/` at the end",
       hidden: false,
       to: "neo4j_sips.Elixir.Neo4j.url"
     ],

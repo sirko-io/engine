@@ -29,8 +29,11 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
+neo4j_url = (System.get_env("NEO4J_URL") || "http://localhost:7474")
+|> String.replace_trailing("/", "") # the trailing slash must be removed to prevent Neo4j Sips from crashing
+
 config :neo4j_sips, Neo4j,
-  url: System.get_env("NEO4J_URL") || "http://localhost:7474",
+  url: neo4j_url,
   pool_size: 5,
   max_overflow: 2,
   timeout: 30,
