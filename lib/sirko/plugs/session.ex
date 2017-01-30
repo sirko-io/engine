@@ -27,12 +27,12 @@ defmodule Sirko.Plugs.Session do
   defp match(conn, given_path, expected_path) when given_path == expected_path do
     conn = fetch_query_params(conn) |> fetch_cookies
 
-    referral_path = conn.query_params["ref"] |> extract_path
+    referrer_path = conn.query_params["ref"] |> extract_path
     current_path = conn.query_params["cur"] |> extract_path
 
     session_key = conn.req_cookies[@session_key_name]
 
-    track(conn, current_path, referral_path, session_key)
+    track(conn, current_path, referrer_path, session_key)
   end
 
   defp match(conn, _, _), do: conn
@@ -44,8 +44,8 @@ defmodule Sirko.Plugs.Session do
     |> halt
   end
 
-  defp track(conn, current_path, referral_path, session_key) do
-    session_key = Session.track(current_path, referral_path, session_key)
+  defp track(conn, current_path, referrer_path, session_key) do
+    session_key = Session.track(current_path, referrer_path, session_key)
 
     conn
     |> put_resp_cookie(@session_key_name, session_key, [max_age: @cookie_max_age])

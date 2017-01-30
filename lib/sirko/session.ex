@@ -31,12 +31,12 @@ defmodule Sirko.Session do
   Adds the given page to the chain of visited pages by a particular user.
   If the given session key belongs to an expired session, a new session gets started.
   """
-  def track(current_path, referral_path, session_key) do
+  def track(current_path, referrer_path, session_key) do
     if Db.Session.active?(session_key) do
-      Db.Session.track(session_key, referral_path, current_path)
+      Db.Session.track(session_key, referrer_path, current_path)
       session_key
     else
-      track(current_path, referral_path, nil)
+      track(current_path, referrer_path, nil)
     end
   end
 

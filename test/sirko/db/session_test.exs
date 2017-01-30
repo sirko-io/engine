@@ -47,24 +47,33 @@ defmodule Sirko.Db.SessionTest do
     end
   end
 
-  describe "track/2" do
+  describe "track/2 the reffer is not present" do
+    test "returns nil" do
+      res = Db.Session.track("skey1", nil, "/list")
+
+      assert res == nil
+    end
+  end
+
+  describe "track/2 the reffer is present" do
     setup do
-      referral_path = "/popular"
+      info = [
+        session_key:   "skey1",
+        referrer_path: "/popular",
+        current_path:  "/list"
+      ]
 
-      query = """
-        CREATE (:Page { path: {path} })
-      """
-
-      execute_query(query, %{ path: referral_path })
-
-      { :ok, [referral_path: referral_path] }
+      { :ok, info }
     end
 
-    test "creates a relation between 2 pages", %{ referral_path: referral_path } do
-      session_key = "skey1"
-      current_path = "/list"
+    test "creates a relation between 2 pages", info do
+      %{
+        session_key:   session_key,
+        referrer_path: referrer_path,
+        current_path:  current_path
+      } = info
 
-      Db.Session.track(session_key, referral_path, current_path)
+      Db.Session.track(session_key, referrer_path, current_path)
 
       query = """
         MATCH (referral:Page)-[session:SESSION { key: {key} }]->(current:Page)
@@ -77,24 +86,33 @@ defmodule Sirko.Db.SessionTest do
         "session"  => session
       }] = execute_query(query, %{ key: session_key })
 
-      assert referral_page["path"] == referral_path
+      assert referral_page["path"] == referrer_path
       assert current_page["path"] == current_path
       assert session["occurred_at"] != nil
       assert session["count"] == 1
     end
 
-    test "does not create extra nodes when the page exists", %{ referral_path: referral_path } do
-      Db.Session.track("skey1", referral_path, "/list")
-      Db.Session.track("skey2", referral_path, "/list")
+    test "does not create extra nodes when the page exists", info do
+      %{
+        referrer_path: referrer_path,
+        current_path:  current_path
+      } = info
+
+      Db.Session.track("skey1", referrer_path, current_path)
+      Db.Session.track("skey2", referrer_path, current_path)
 
       assert count_pages() == 2
     end
 
-    test "updates the count field for the relation when the relation with the given key exists", %{ referral_path: referral_path } do
-      session_key = "skey1"
+    test "updates the count field for the relation when the relation with the given key exists", info do
+      %{
+        session_key:   session_key,
+        referrer_path: referrer_path,
+        current_path:  current_path
+      } = info
 
-      Db.Session.track(session_key, referral_path, "/list")
-      Db.Session.track(session_key, referral_path, "/list")
+      Db.Session.track(session_key, referrer_path, current_path)
+      Db.Session.track(session_key, referrer_path, current_path)
 
       query = """
         MATCH (:Page)-[session:SESSION { key: {key} }]->(:Page)

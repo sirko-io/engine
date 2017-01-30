@@ -25,23 +25,29 @@ defmodule Sirko.Db.Session do
   end
 
   @doc """
+  Do nothing if the referrer is nil. We cannot track a transition,
+  because it hasn't happened yet.
+  """
+  def track(session_key, nil, _), do: nil
+
+  @doc """
   Creates a session relation between 2 visited pages if it is
   a first transition between those pages during the current session.
   Otherwise, the relation will be updated to reflect a number of times
   the transition happened during the current session.
   """
-  def track(session_key, referral_path, current_path) do
+  def track(session_key, referrer_path, current_path) do
     query = """
-      MATCH (referral:Page { path: {referral_path} })
+      MERGE (referrer:Page { path: {referrer_path} })
       MERGE (current:Page { path: {current_path} })
-      MERGE (referral)-[s:SESSION { key: {key} }]->(current)
+      MERGE (referrer)-[s:SESSION { key: {key} }]->(current)
       ON CREATE SET s.occurred_at = timestamp(), s.count = 1
       ON MATCH SET s.occurred_at = timestamp(), s.count = s.count + 1
     """
 
     Neo.query(
       query,
-      %{ key: session_key, referral_path: referral_path, current_path: current_path }
+      %{ key: session_key, referrer_path: referrer_path, current_path: current_path }
     )
   end
 
