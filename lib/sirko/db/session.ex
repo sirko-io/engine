@@ -28,7 +28,7 @@ defmodule Sirko.Db.Session do
   Do nothing if the referrer is nil. We cannot track a transition,
   because it hasn't happened yet.
   """
-  def track(session_key, nil, _), do: nil
+  def track(_, nil, _), do: nil
 
   @doc """
   Creates a session relation between 2 visited pages if it is

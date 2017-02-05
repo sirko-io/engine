@@ -37,10 +37,16 @@ defmodule Sirko.WebTest do
       assert conn.resp_body == "/details"
     end
 
-    test "responds with an empty body when the current page is new" do
-      conn = call("http://app.io/reports")
+    test "rejects requests with the blank cur parameter" do
+      conn = call(nil)
 
-      assert conn.resp_body == ""
+      assert conn.status == 422
+    end
+
+    test "rejects requests without the cur parameter" do
+      conn = conn(:get, "/predict") |> Web.call(@opts)
+
+      assert conn.status == 422
     end
   end
 

@@ -5,11 +5,10 @@ defmodule Sirko.Web do
   """
 
   use Plug.Router
+
   require Logger
 
-  import Sirko.Url, only: [ extract_path: 1 ]
-
-  alias Sirko.Predictor
+  alias Sirko.Web.{Session, Predictor}
 
   plug Plug.Logger
   plug Plug.Static,
@@ -18,8 +17,6 @@ defmodule Sirko.Web do
 
   plug Sirko.Plugs.Access
   plug Sirko.Plugs.Cors
-  plug Sirko.Plugs.Session,
-    on: "/predict"
 
   plug :match
   plug :dispatch
@@ -41,14 +38,18 @@ defmodule Sirko.Web do
   end
 
   get "/predict" do
-    current_path = conn.query_params["cur"] |> extract_path
-    next_path = predict(current_path)
+    conn = fetch_query_params(conn)
 
-    log_prediction(current_path, next_path)
-
-    conn
-    |> send_resp(200, next_path)
-    |> halt
+    case conn.query_params["cur"] do
+      "" ->
+        conn
+        |> send_resp(422, "")
+        |> halt
+      _ ->
+        Session.call(conn)
+        |> Predictor.call
+        |> halt
+    end
   end
 
   if Mix.env == :dev do
@@ -68,17 +69,5 @@ defmodule Sirko.Web do
     conn
     |> send_resp(404, "")
     |> halt
-  end
-
-  defp predict(current_path) do
-    Predictor.predict(current_path) || ""
-  end
-
-  defp log_prediction(current_path, "") do
-    Logger.info("No prediction for #{current_path}")
-  end
-
-  defp log_prediction(current_path, next_path) do
-    Logger.info("Predicted #{next_path} for #{current_path}")
   end
 end
