@@ -7,12 +7,11 @@ defmodule Sirko.Web.Predictor do
   require Logger
 
   import Plug.Conn
-  import Sirko.Url, only: [ extract_path: 1 ]
 
   alias Sirko.Predictor
 
   def call(conn) do
-    current_path = conn.query_params["cur"] |> extract_path
+    current_path = conn.query_params["cur"]
 
     next_path = Predictor.predict(current_path) || ""
 

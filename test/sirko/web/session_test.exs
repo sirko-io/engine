@@ -15,7 +15,7 @@ defmodule Sirko.Web.SessionTest do
   end
 
   test "assigns a session key" do
-    conn = conn(:get, "/predict?cur=http://app.io/list")
+    conn = conn(:get, "/predict?cur=/list")
     |> fetch_query_params
     |> call
 

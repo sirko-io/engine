@@ -20,19 +20,19 @@ defmodule Sirko.WebTest do
 
   describe "GET /predict" do
     test "assigns a session key" do
-      conn = call("http://app.io/list")
+      conn = call("/list")
 
       assert conn.resp_cookies["_spio_skey"][:value] != nil
     end
 
     test "sets CORS headers" do
-      conn = call("http://app.io/list")
+      conn = call("/list")
 
       assert get_resp_header(conn, "access-control-allow-methods") != nil
     end
 
     test "returns the path of a next page" do
-      conn = call("http://app.io/list")
+      conn = call("/list")
 
       assert conn.resp_body == "/details"
     end
@@ -50,8 +50,8 @@ defmodule Sirko.WebTest do
     end
   end
 
-  defp call(current_url) do
-    conn(:get, "/predict?cur=#{current_url}")
+  defp call(current_path) do
+    conn(:get, "/predict?cur=#{current_path}")
     |> put_req_header("referer", "http://app.io")
     |> Web.call(@opts)
   end

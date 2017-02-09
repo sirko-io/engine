@@ -17,7 +17,7 @@ defmodule Sirko.Web.PredictorTest do
   end
 
   test "assigns the path of a next page" do
-    conn = conn(:get, "/predict?cur=http://app.io/list")
+    conn = conn(:get, "/predict?cur=/list")
     |> fetch_query_params
     |> call
 
@@ -25,7 +25,7 @@ defmodule Sirko.Web.PredictorTest do
   end
 
   test "assigns an empty string when the current page is a new one" do
-    conn = conn(:get, "/predict?cur=http://app.io/reports")
+    conn = conn(:get, "/predict?cur=/reports")
     |> fetch_query_params
     |> call
 

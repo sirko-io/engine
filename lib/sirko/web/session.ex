@@ -11,7 +11,6 @@ defmodule Sirko.Web.Session do
   """
 
   import Plug.Conn
-  import Sirko.Url, only: [ extract_path: 1 ]
 
   alias Sirko.Session
 
@@ -28,8 +27,8 @@ defmodule Sirko.Web.Session do
   end
 
   defp extract_details(conn) do
-    current_path = conn.query_params["cur"] |> extract_path
-    referrer_path = conn.query_params["ref"] |> extract_path
+    current_path = conn.query_params["cur"]
+    referrer_path = conn.query_params["ref"]
 
     conn = fetch_cookies(conn)
 
