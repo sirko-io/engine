@@ -3,31 +3,49 @@
 [![Build Status](https://travis-ci.org/dnesteryuk/sirko-engine.svg?branch=master)](https://travis-ci.org/dnesteryuk/sirko-engine)
 
 It is a simple engine to track users' navigation on a site and predict the next page which most likely will be visited by the current user.
-As soon as we are able to predict the next page, we can prerender that page in order to provide better experience (an instant transition in some cases) to the user.
+As soon as the engine predicts the next page, a client part of the solution adds a hint for the browser in order to prerender the predicted page. In some cases, the load of the prerendered page is close to be instant, hence, the end user gets faster response and better experience.
 
-A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
-How it works in the Chrome you can read [here](https://www.chromium.org/developers/design-documents/prerender).
+- A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
+- How it works in the Chrome you can read [here](https://www.chromium.org/developers/design-documents/prerender).
+
+Currently, this solution is only recommended for public pages which meet the following criteria:
+
+- **pages aren't personalized**. There are bugs related to a transition from the anonymous state to the authorized one.
+- **pages aren't too diverse**. For instance, if you have an online store with a lot of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
 
 [Try demo](http://demo.sirko.io)
 
-## Usage
+### Users on mobile devices
 
-The easiest way to install the application is to use a [docker image](https://github.com/dnesteryuk/sirko-docker).
+In order to save a battery of users on mobile devices the engine doesn't track users.
 
-But, if you have reasons to not use Docker, follow the instruction below.
+## Table of contents
 
-### Installation
+- [Installation](#installation)
+  - [Manual installation](#manual-installation)
+  - [Install with Docker](#install-with-docker)
+  - [Nginx virtual host](#nginx-virtual-host)
+  - [Client integration](#client-integration)
+- [Getting accuracy](#getting-accuracy)
+- [Catching errors](#catching-errors)
+- [Development](#development)
+- [License](#license)
 
-**IMPORTANT:** The following instruction supposes that Neo4j is already [installed](http://neo4j.com/docs/operations-manual/3.1/installation/) on your server or you got an account from one of [Neo4j cloud hosting providers](https://neo4j.com/developer/guide-cloud-deployment/#_neo4j_cloud_hosting_providers).
+# Installation
 
-1. Open a terminal and access your server through SSH.
-2. Download the latest release:
+The easiest way to install the engine is to use a [docker image](#install-with-docker). But, if you have reasons to not use Docker, follow the instruction below.
+
+**IMPORTANT:** The following instruction supposes that Neo4j 3.0 or greater is already [installed](http://neo4j.com/docs/operations-manual/3.1/installation/) on your server or you got an account from one of [Neo4j cloud hosting providers](https://neo4j.com/developer/guide-cloud-deployment/#_neo4j_cloud_hosting_providers).
+
+## Manual installation
+
+1. Download the latest release:
 
     ```
-    $ curl https://github.com/dnesteryuk/sirko-engine/archive/latest.tar.gz
+    $ wget https://github.com/sirko-io/engine/archive/latest.tar.gz
     ```
 
-3. Unpack the archive:
+2. Unpack the archive:
 
     ```
     $ sudo mkdir /usr/local/sirko
@@ -36,7 +54,7 @@ But, if you have reasons to not use Docker, follow the instruction below.
     $ tar xfz /home/ubuntu/latest.tar.gz
     ```
 
-4. Setup [systemd](https://en.wikipedia.org/wiki/Systemd) which will manage the engine:
+3. Setup [Systemd](https://en.wikipedia.org/wiki/Systemd) which will manage the engine:
 
     ```
     sudo nano /lib/systemd/system/sirko.service
@@ -63,9 +81,9 @@ But, if you have reasons to not use Docker, follow the instruction below.
     WantedBy=multi-user.target
     ```
 
-    **Note:** You are welcome to use any other alternative to systemd.
+    **Note:** You are welcome to use any other alternative to Systemd.
 
-5. Edit a sirko configuration file:
+4. Edit a configuration file:
 
     ```
     $ nano /usr/local/sirko/sirko.conf
@@ -73,7 +91,7 @@ But, if you have reasons to not use Docker, follow the instruction below.
 
     There, you have to define a url to your Neo4j instance and credentials, also, you need to specify a url to your site for which you want to make predictions.
 
-6. Start the engine:
+5. Start the engine:
 
     ```
     $ sudo systemctl daemon-reload
@@ -81,7 +99,7 @@ But, if you have reasons to not use Docker, follow the instruction below.
     $ sudo systemctl start sirko.service
     ```
 
-    To make sure, it is successfully started, you can check it status:
+    To make sure, it is successfully started, you can check its status:
 
     ```
     $ systemctl status sirko.service
@@ -98,7 +116,42 @@ But, if you have reasons to not use Docker, follow the instruction below.
 
     it's started.
 
-7. Create a nginx virtual host for the engine:
+## Install with Docker
+
+1. Download and save a config file in some directory on your server:
+
+   ```
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/latest/config/sirko.conf
+   ```
+
+2. Define your settings in the downloaded configuration file:
+
+    ```
+    $ nano sirko.conf
+    ```
+
+3. Launch the docker container:
+
+    ```
+    $ sudo docker run -d --name sirko -p 4000:4000 --restart always -v ./sirko.conf:/usr/local/sirko/sirko.conf sirko:latest
+
+    ```
+
+4. Verify what happens to the engine:
+
+    ```
+    $ sudo docker logs sirko
+    ```
+
+  If you see a message like this:
+
+      Expecting requests from http://localhost:3000
+
+  the engine is running and it is ready to accept requests.
+
+### Nginx virtual host
+
+1. Create a nginx virtual host for the engine:
 
     ```
     $ sudo touch /etc/nginx/sites-available/sirko
@@ -106,7 +159,7 @@ But, if you have reasons to not use Docker, follow the instruction below.
     $ sudo nano /etc/nginx/sites-available/sirko
     ```
 
-    add content to the created file:
+2. Copy and past the following content:
 
     ```
     upstream sirko {
@@ -128,23 +181,63 @@ But, if you have reasons to not use Docker, follow the instruction below.
     }
     ```
 
-8. Restart nginx:
+8. Restart Nginx:
 
     ```
     $ sudo service nginx restart
     ```
 
-9. Check documentation of a [sirko client](https://github.com/dnesteryuk/sirko-client) and embed it to your site.
+### Client integration
+
+Once you've got the engine installed, you need to integrate the client part of the solution to your site. The [sirko client](https://github.com/sirko-io/client) is a JavaScript library which prepares data and sends them to the engine.
+
+To get it in your site, add the following code before `</head>`:
+
+```html
+<script async src="http://__URL_TO_ENGINE_HERE__/assets/client.js"></script>
+<script>
+  (function(w,m){w[m]=function(){w[m].q.push(arguments);};w[m].q=[];})(window,'sirko');
+  sirko('engineUrl', '__URL_TO_ENGINE_HERE__');
+</script>
+```
+
+**Note:** Please, don't forget to replace the placeholder with a real url.
+
+Once you've integrated the client, visit your site and make sure through a development webtool (F12) that requests to the engine have status 200.
+
+## Getting accuracy
+
+If you want to know accuracy of predictions made for your site, you can integrate the sirko client with a tracking service which is able to track custom events and execute formulas over written data. Use the following code as an example:
+
+```html
+<script>
+  window.onload = function() {
+    sirko('predicted', function(currentPrediction, isPrevCorrect) {
+      if (isPrevCorrect !== undefined) {
+        // call your tracking service here
+      }
+    });
+  };
+</script>
+```
+
+**Note::** The second argument is undefined when it is a first visit of the current user. In this case, there is nothing to track.
+
+The code example uses the onload callback to be sure that all dependencies get loaded, But, the sirko client can be called earlier, just verify the documentation to your tracking service when you can send custom events. Some tracking services can be called without waiting for loading the whole content.
+
+## Catching errors
+
+You might want to catch errors which happen to the engine and report them. The engine got integrated with [Rollbar](https://rollbar.com) which notifies you about errors via an email or a messenger (it supports a few). To start using it, register an account and add your rollbar access token to the `sirko.conf`.
 
 ## Development
 
 ### Dependencies
 
- - [Elixir](http://elixir-lang.org/install.html) 1.3.* or 1.4.*
+ - [Elixir](http://elixir-lang.org/install.html) 1.4.*
  - [Neo4j](https://neo4j.com/download/) 3.*
  - [Npm](https://npmjs.com)
 
-If you use [docker](https://www.docker.com/), execute the following command to install Neo4j:
+If you use [Docker](https://www.docker.com/), execute the following command to install Neo4j:
 
 ```
 $ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7474:7474 neo4j:3.1
@@ -175,9 +268,9 @@ The web interface of Neo4j is accessible on [http://localhost:7474](http://local
     $ iex -S mix
     ```
 
-5. Check documentation of the [sirko client](https://github.com/dnesteryuk/sirko-client) and embed it to a site you want to use for testing.
+5. [Integrate](#client-integration) the sirko client into a site you want to use for testing.
 
-**Note:** If you don't have a site to check your changes, you can clone [this demo site](https://github.com/dnesteryuk/sirko-demo) and locally set it up.
+**Note:** If you don't have a site to check your changes, you can clone [this demo site](https://github.com/sirko-io/demo) and locally set it up.
 
 ### Testing
 
@@ -190,4 +283,4 @@ $ mix test
 
 ## License
 
-The project is distributed under the [GPLv3 license](https://github.com/dnesteryuk/sirko-engine/blob/master/LICENSE.txt).
+The project is distributed under the [GPLv3 license](https://github.com/sirko-io/engine/blob/master/LICENSE.txt).
