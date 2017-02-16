@@ -1,6 +1,6 @@
 # Sirko Engine
 
-[![Build Status](https://travis-ci.org/dnesteryuk/sirko-engine.svg?branch=master)](https://travis-ci.org/dnesteryuk/sirko-engine)
+[![Build Status](https://travis-ci.org/sirko-io/engine.svg?branch=master)](https://travis-ci.org/sirko-io/engine)
 
 It is a simple engine to track users' navigation on a site and predict the next page which most likely will be visited by the current user.
 As soon as the engine predicts the next page, a client part of the solution adds a hint for the browser in order to prerender the predicted page. In some cases, the load of the prerendered page is close to be instant, hence, the end user gets faster response and better experience.
