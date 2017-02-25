@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "sirko": "https://github.com/dnesteryuk/sirko-client.git"
+    "sirko": "0.0.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dnesteryuk/sirko-engine.git"
+    "url": "git+https://github.com/sirko-io/engine.git"
   },
   "license": "GPL-3.0"
 }
