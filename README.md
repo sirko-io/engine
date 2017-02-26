@@ -146,6 +146,8 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 
 **IMPORTANT:** Currently, the compiled version of the engine can only be launched on Debian/Ubuntu x64. If you use another distributive, consider the use of the docker container.
 
+The instruction supposes that you have a ubuntu user, please, don't forget to replace it with an appropriate user for your sever.
+
 1. Download the latest release:
 
     ```
@@ -158,7 +160,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
     $ sudo mkdir /usr/local/sirko
     $ sudo chown ubuntu:ubuntu /usr/local/sirko
     $ cd /usr/local/sirko
-    $ tar xfz /home/ubuntu/latest.tar.gz
+    $ tar xfz /home/ubuntu/sirko.tar.gz
     ```
 
 3. Setup [Systemd](https://en.wikipedia.org/wiki/Systemd) which will manage the engine:
@@ -216,7 +218,6 @@ There are at least 3 ways to install the engine. The easiest one is to install i
     ● sirko.service - Sirko Engine
     Loaded: loaded (/lib/systemd/system/sirko.service; static; vendor preset: enabled)
     Active: active (running) since Mon 2017-01-23 16:45:01 UTC; 17s ago
-
     ```
 
     the engine is running and it is ready to accept requests.
