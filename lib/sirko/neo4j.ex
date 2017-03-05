@@ -1,14 +1,14 @@
-defmodule Sirko.Neo do
+defmodule Sirko.Neo4j do
   @moduledoc """
   A simple wrapper for Neo4j to execute queries
   """
 
   require Logger
 
-  alias Neo4j.Sips, as: Neo4j
+  alias Bolt.Sips, as: Bolt
 
   def query(query, params \\ %{ }) do
-    case Neo4j.query(Neo4j.conn, query, params) do
+    case Bolt.query(Bolt.conn, query, params) do
       {:ok, res} ->
         res
       {:error, [%{ "code" => code, "message" => message }]} ->

@@ -8,8 +8,7 @@ defmodule Sirko do
 
     children = [
       Sirko.Web.start_link(get_env(:sirko, :web)),
-      supervisor(Sirko.Scheduler.Supervisor, [get_env(:sirko, :scheduler)]),
-      supervisor(Neo4j.Sips,                 [get_env(:neo4j_sips, Neo4j)])
+      supervisor(Sirko.Scheduler.Supervisor, [get_env(:sirko, :scheduler)])
     ]
 
     opts = [strategy: :one_for_one, name: Sirko.Supervisor]

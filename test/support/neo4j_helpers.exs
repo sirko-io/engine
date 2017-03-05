@@ -1,17 +1,17 @@
 defmodule Support.Neo4jHelpers do
-  alias Neo4j.Sips, as: Neo4j
+  alias Bolt.Sips, as: Bolt
 
   def execute_query(query, params \\ %{ }) do
-    case Neo4j.query(Neo4j.conn, query, params) do
+    case Bolt.query(Bolt.conn, query, params) do
       {:ok, res} ->
         res
-      {:error, [%{ "code" => _code, "message" => message }]} ->
+      {:error, [code: _code, message: message]} ->
         raise message
     end
   end
 
   def cleanup_db do
-    Neo4j.query!(Neo4j.conn, "MATCH (n) DETACH DELETE n")
+    Bolt.query!(Bolt.conn, "MATCH (n) DETACH DELETE n")
   end
 
   def load_fixture(name) do

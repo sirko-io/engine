@@ -33,7 +33,7 @@ environment :prod do
   set cookie: :crypto.strong_rand_bytes(32) |> Base.encode16
   set overlays: [
     {:mkdir, "priv/static"},
-    {:copy, "node_modules/sirko-client/dist/sirko.js", "priv/static/client.js"},
+    {:copy, "node_modules/sirko/dist/sirko.js", "priv/static/client.js"},
     {:copy, "config/sirko.conf", "sirko.conf"}
   ]
 end

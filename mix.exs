@@ -1,13 +1,13 @@
 defmodule Sirko.Mixfile do
   use Mix.Project
 
-  @version "0.0.1"
+  @version "0.0.2"
 
   def project do
     [
       app: :sirko,
       version: @version,
-      elixir: "~> 1.3",
+      elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps()
@@ -19,8 +19,7 @@ defmodule Sirko.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      applications: [:logger, :cowboy, :plug, :neo4j_sips, :rollbax],
-      mod: {Sirko, []}
+      extra_applications: [:logger, :fuzzyurl]
     ]
   end
 
@@ -37,10 +36,10 @@ defmodule Sirko.Mixfile do
     [
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.2"},
-      {:neo4j_sips, "~> 0.2"},
+      {:bolt_sips, "~> 0.2"},
       {:rollbax, "~> 0.8"},
-      {:distillery, "~> 1.0"},
-      {:conform, "~> 2.1"}
+      {:distillery, "~> 1.0", require: false},
+      {:conform, "~> 2.1", require: false}
     ]
   end
 end

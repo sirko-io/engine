@@ -25,13 +25,13 @@ defmodule Sirko.CleanerTest do
     test "excludes stale sessions from transitions" do
       transition = transition_between_paths("/list", "/popular")
 
-      assert transition["count"] == 4
+      assert transition.properties["count"] == 4
 
       clean_up()
 
       transition = transition_between_paths("/list", "/popular")
 
-      assert transition["count"] == 1
+      assert transition.properties["count"] == 1
     end
 
     test "removes stale sessions" do

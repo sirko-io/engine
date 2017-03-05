@@ -313,7 +313,7 @@ You might want to catch errors which happen to the engine and report them. The e
 If you use [Docker](https://www.docker.com/), execute the following command to install Neo4j:
 
 ```
-$ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7474:7474 neo4j:3.1
+$ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7687:7687 -p 7474:7474 neo4j:3.1
 ```
 
 The web interface of Neo4j is accessible on [http://localhost:7474](http://localhost:7474).

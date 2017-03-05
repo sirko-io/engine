@@ -7,7 +7,7 @@ defmodule Sirko.Db.Session do
   That key allows to observe users' navigation between pages.
   """
 
-  alias Sirko.Neo, as: Neo
+  alias Sirko.Neo4j, as: Neo4j
 
   @doc """
   Creates a relation between the starting point and a page having the given path.
@@ -21,7 +21,7 @@ defmodule Sirko.Db.Session do
       SET s.occurred_at = timestamp()
     """
 
-    Neo.query(query, %{ key: session_key, path: current_path })
+    Neo4j.query(query, %{ key: session_key, path: current_path })
   end
 
   @doc """
@@ -45,7 +45,7 @@ defmodule Sirko.Db.Session do
       ON MATCH SET s.occurred_at = timestamp(), s.count = s.count + 1
     """
 
-    Neo.query(
+    Neo4j.query(
       query,
       %{ key: session_key, referrer_path: referrer_path, current_path: current_path }
     )
@@ -76,7 +76,7 @@ defmodule Sirko.Db.Session do
           new_s.count = 1
     """
 
-    Neo.query(query, %{ keys: session_keys })
+    Neo4j.query(query, %{ keys: session_keys })
   end
 
   @doc """
@@ -86,14 +86,14 @@ defmodule Sirko.Db.Session do
   def active?(session_key) do
     query = """
       MATCH ()-[s:SESSION { key: {key} }]->()
-      RETURN s AS last_hit
+      RETURN (s.expired_at IS NULL) AS active
       ORDER BY s.occurred_at DESC
       LIMIT 1
     """
 
-    case Neo.query(query, %{ key: session_key }) do
-      [%{ "last_hit" => last_hit }] ->
-        !last_hit["expired_at"]
+    case Neo4j.query(query, %{ key: session_key }) do
+      [%{ "active" => active }] ->
+        active
       _ ->
         false
     end
@@ -115,7 +115,7 @@ defmodule Sirko.Db.Session do
       RETURN collect(key) as keys
     """
 
-    [%{"keys" => keys}] = Neo.query(query, %{ time: time })
+    [%{"keys" => keys}] = Neo4j.query(query, %{ time: time })
 
     keys
   end
@@ -141,7 +141,7 @@ defmodule Sirko.Db.Session do
       DETACH DELETE last_hit
     """
 
-    Neo.query(query, %{ time: time })
+    Neo4j.query(query, %{ time: time })
   end
 
   @doc """
@@ -154,7 +154,7 @@ defmodule Sirko.Db.Session do
       RETURN collect(s.key) as keys
     """
 
-    [%{"keys" => keys}] = Neo.query(query, %{ time: time })
+    [%{"keys" => keys}] = Neo4j.query(query, %{ time: time })
 
     keys
   end
@@ -171,6 +171,6 @@ defmodule Sirko.Db.Session do
       DELETE sess
     """
 
-    Neo.query(query, %{ time: time })
+    Neo4j.query(query, %{ time: time })
   end
 end

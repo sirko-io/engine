@@ -1,5 +1,5 @@
 defmodule Sirko.Db.Transition do
-  alias Sirko.Neo, as: Neo
+  alias Sirko.Neo4j, as: Neo4j
 
   @doc """
   Iterates through the given list of session keys and updates counts of visits
@@ -22,7 +22,7 @@ defmodule Sirko.Db.Transition do
           t.updated_at = updated_at
     """
 
-    Neo.query(query, %{ keys: session_keys })
+    Neo4j.query(query, %{ keys: session_keys })
   end
 
   @doc """
@@ -37,7 +37,7 @@ defmodule Sirko.Db.Transition do
       SET t.count = t.count - s.count
     """
 
-    Neo.query(query, %{ session_keys: session_keys })
+    Neo4j.query(query, %{ session_keys: session_keys })
   end
 
   @doc """
@@ -51,7 +51,7 @@ defmodule Sirko.Db.Transition do
       LIMIT 1
     """
 
-    case Neo.query(query, %{ current_path: current_path }) do
+    case Neo4j.query(query, %{ current_path: current_path }) do
       [res] ->
         res["next_path"]
       _ ->
@@ -69,6 +69,6 @@ defmodule Sirko.Db.Transition do
       DELETE t
     """
 
-    Neo.query(query)
+    Neo4j.query(query)
   end
 end

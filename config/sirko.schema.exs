@@ -10,10 +10,21 @@ https://github.com/bitwalker/conform.
     "neo4j.url": [
       commented: false,
       datatype: :binary,
-      default: "http://localhost:7474",
-      doc: "A url to a Neo4j server. IMPORTANT: The url mustn't contain `db/data/` at the end",
+      default: "bolt://localhost:7687",
+      doc: """
+           A url to a Neo4j instance. The engine only works with a bolt protocol.
+           To provide credentials, use this format: bolt://username:password@host:7687
+           """,
       hidden: false,
-      to: "neo4j_sips.Elixir.Neo4j.url"
+      to: "bolt_sips.Elixir.Bolt.url"
+    ],
+    "neo4j.ssl": [
+      commented: false,
+      datatype: :boolean,
+      default: false,
+      doc: "Either to use a secure connection or not",
+      hidden: false,
+      to: "bolt_sips.Elixir.Bolt.ssl"
     ],
     "neo4j.pool_size": [
       commented: false,
@@ -21,7 +32,7 @@ https://github.com/bitwalker/conform.
       default: 20,
       doc: "Maximum pool size",
       hidden: false,
-      to: "neo4j_sips.Elixir.Neo4j.pool_size"
+      to: "bolt_sips.Elixir.Bolt.pool_size"
     ],
     "neo4j.max_overflow": [
       commented: false,
@@ -29,29 +40,15 @@ https://github.com/bitwalker/conform.
       default: 10,
       doc: "Maximum number of workers created if the pool is empty",
       hidden: false,
-      to: "neo4j_sips.Elixir.Neo4j.max_overflow"
+      to: "bolt_sips.Elixir.Bolt.max_overflow"
     ],
     "neo4j.timeout": [
       commented: false,
       datatype: :integer,
-      default: 5000,
+      default: 15000,
       doc: "Connection timeout in milliseconds",
       hidden: false,
-      to: "neo4j_sips.Elixir.Neo4j.timeout"
-    ],
-    "neo4j.basic_auth.username": [
-      commented: false,
-      datatype: :binary,
-      doc: "A username to be used for authorization. Comment it out, if you don't use the basic authorization.",
-      hidden: false,
-      to: "neo4j_sips.Elixir.Neo4j.basic_auth.username"
-    ],
-    "neo4j.basic_auth.password": [
-      commented: false,
-      datatype: :binary,
-      doc: "A password to be used for authorization. Comment it out, if you don't use the basic authorization.",
-      hidden: false,
-      to: "neo4j_sips.Elixir.Neo4j.basic_auth.password"
+      to: "bolt_sips.Elixir.Bolt.timeout"
     ],
     "logger.level": [
       commented: false,

@@ -33,10 +33,10 @@ defmodule Sirko.Db.SessionTest do
         "session" => session
       }] = execute_query(query, %{ key: session_key })
 
-      assert start_page["start"] == true
-      assert current_page["path"] == current_path
-      assert session["occurred_at"] != nil
-      assert session["count"] == 1
+      assert start_page.properties["start"] == true
+      assert current_page.properties["path"] == current_path
+      assert session.properties["occurred_at"] != nil
+      assert session.properties["count"] == 1
     end
 
     test "does not create extra nodes when the page exists" do
@@ -86,10 +86,10 @@ defmodule Sirko.Db.SessionTest do
         "session"  => session
       }] = execute_query(query, %{ key: session_key })
 
-      assert referral_page["path"] == referrer_path
-      assert current_page["path"] == current_path
-      assert session["occurred_at"] != nil
-      assert session["count"] == 1
+      assert referral_page.properties["path"] == referrer_path
+      assert current_page.properties["path"] == current_path
+      assert session.properties["occurred_at"] != nil
+      assert session.properties["count"] == 1
     end
 
     test "does not create extra nodes when the page exists", info do
@@ -123,7 +123,7 @@ defmodule Sirko.Db.SessionTest do
         "session"  => session
       }] = execute_query(query, %{ key: session_key })
 
-      assert session["count"] == 2
+      assert session.properties["count"] == 2
     end
   end
 

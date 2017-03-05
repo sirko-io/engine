@@ -29,18 +29,12 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-neo4j_url = (System.get_env("NEO4J_URL") || "http://localhost:7474")
-|> String.replace_trailing("/", "") # the trailing slash must be removed to prevent Neo4j Sips from crashing
-
-config :neo4j_sips, Neo4j,
-  url: neo4j_url,
-  pool_size: 5,
-  max_overflow: 2,
-  timeout: 30,
-  basic_auth: [
-    username: System.get_env("NEO4J_USERNAME"),
-    password: System.get_env("NEO4J_PASSWORD")
-  ]
+config :bolt_sips, Bolt,
+  url: System.get_env("NEO4J_URL") || "bolt://localhost:7687",
+  ssl: System.get_env("NEO4J_SSL") || false,
+  pool_size: System.get_env("NEO4J_POOL_SIZE") || 20,
+  max_overflow: System.get_env("NEO4J_MAX_OVERFLOW") || 10,
+  timeout: System.get_env("NEO4J_TIMEOUT") || 15_000
 
 config :sirko, :web,
   port: System.get_env("SIRKO_HTTP_PORT") || 4000,

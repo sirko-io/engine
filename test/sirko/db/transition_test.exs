@@ -29,23 +29,23 @@ defmodule Sirko.Db.TransitionTest do
 
       start_list = transition_between_pages({"start", true}, {"path", "/list"})
 
-      assert start_list["count"] == 2
-      assert start_list["updated_at"] != nil
+      assert start_list.properties["count"] == 2
+      assert start_list.properties["updated_at"] != nil
 
       list_popular = transition_between_paths("/list", "/popular")
 
-      assert list_popular["count"] == 3
-      assert list_popular["updated_at"] != nil
+      assert list_popular.properties["count"] == 3
+      assert list_popular.properties["updated_at"] != nil
 
       list_exit = transition_between_pages({"path", "/list"}, {"exit", true})
 
-      assert list_exit["count"] == 1
-      assert list_exit["updated_at"] != nil
+      assert list_exit.properties["count"] == 1
+      assert list_exit.properties["updated_at"] != nil
 
       popular_exit = transition_between_pages({"path", "/popular"}, {"exit", true})
 
-      assert popular_exit["count"] == 1
-      assert popular_exit["updated_at"] != nil
+      assert popular_exit.properties["count"] == 1
+      assert popular_exit.properties["updated_at"] != nil
     end
 
     test "increases counts for a transition when it exists", %{ session_keys: session_keys } do
@@ -57,8 +57,8 @@ defmodule Sirko.Db.TransitionTest do
 
       updated_transition = transition_between_paths("/list", "/popular")
 
-      assert updated_transition["count"] == 7
-      assert updated_transition["updated_at"] != initial_transition["updated_at"]
+      assert updated_transition.properties["count"] == 7
+      assert updated_transition.properties["updated_at"] != initial_transition.properties["updated_at"]
     end
 
     test "does not affect transitions which does not belong to the found session", %{ session_keys: session_keys } do
@@ -69,8 +69,8 @@ defmodule Sirko.Db.TransitionTest do
       list_details = transition_between_paths("/list", "/details")
       about_popular = transition_between_paths("/about", "/popular")
 
-      assert list_details["count"] == 6
-      assert about_popular["count"] == 2
+      assert list_details.properties["count"] == 6
+      assert about_popular.properties["count"] == 2
     end
   end
 
@@ -87,13 +87,13 @@ defmodule Sirko.Db.TransitionTest do
     test "decreases counts for transitions matching the corresponding sessions", %{ session_keys: session_keys } do
       initial_transition = transition_between_paths("/list", "/popular")
 
-      assert initial_transition["count"] == 4
+      assert initial_transition.properties["count"] == 4
 
       Db.Transition.exclude_sessions(session_keys)
 
       updated_transition = transition_between_paths("/list", "/popular")
 
-      assert updated_transition["count"] == 1
+      assert updated_transition.properties["count"] == 1
     end
   end
 
