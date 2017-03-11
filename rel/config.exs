@@ -32,8 +32,13 @@ environment :prod do
   set include_src: false
   set cookie: :crypto.strong_rand_bytes(32) |> Base.encode16
   set overlays: [
-    {:mkdir, "priv/static"},
-    {:copy, "node_modules/sirko/dist/sirko.js", "priv/static/client.js"},
+    # adds the js client to the sirko lib.
+    # It doesn't work when the priv/static folder is added to the root directory
+    # of the released program, it must be placed in the lib directory of the app.
+    {:mkdir, "lib/sirko-<%= release_version %>/priv/static"},
+    {:copy, "node_modules/sirko/dist/sirko.js", "lib/sirko-<%= release_version %>/priv/static/client.js"},
+
+    # adds the config file to the root directory of the released program
     {:copy, "config/sirko.conf", "sirko.conf"}
   ]
 end

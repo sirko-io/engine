@@ -12,8 +12,6 @@ defmodule Sirko.AssetsPlugin do
       {output, error_code} ->
         {:error, output, error_code}
     end
-
-    nil
   end
 
   def after_assembly(_, _), do: nil
