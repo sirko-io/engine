@@ -56,7 +56,7 @@ defmodule Sirko.Web do
     # This action is only require for the dev environment. The prod environment contains
     # the js client in the priv/static folder. Hence, the Plug.Static is able to serve it.
     get "/assets/client.js" do
-      {:ok, content} = File.read("node_modules/sirko-client/dist/sirko.js")
+      {:ok, content} = File.read("node_modules/sirko/dist/sirko.js")
 
       conn
       |> put_resp_content_type("application/javascript")
