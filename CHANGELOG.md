@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.0.2 (not released yet)
+## v0.1.0 (not released yet)
 
 ### Changed
 
@@ -29,3 +29,7 @@
     ```
     neo4j.ssl = true
     ```
+
+### Added
+
+- Each Neo4j query gets logged when the log level is `info`. It will help in debugging slow queries.

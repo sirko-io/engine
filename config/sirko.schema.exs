@@ -38,7 +38,7 @@ https://github.com/bitwalker/conform.
       commented: false,
       datatype: :integer,
       default: 10,
-      doc: "Maximum number of workers created if the pool is empty",
+      doc: "Maximum number of backup workers created if the pool is empty",
       hidden: false,
       to: "bolt_sips.Elixir.Bolt.max_overflow"
     ],

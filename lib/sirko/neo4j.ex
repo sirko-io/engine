@@ -7,14 +7,25 @@ defmodule Sirko.Neo4j do
 
   alias Bolt.Sips, as: Bolt
 
+  @doc """
+  Executes the given query and logs the duration of its execution.
+  Raises an error if the query fails.
+  """
   def query(query, params \\ %{ }) do
-    case Bolt.query(Bolt.conn, query, params) do
-      {:ok, res} ->
-        res
+    {duration, query_res} = :timer.tc(Bolt, :query, [Bolt.conn(), query, params])
+
+    Logger.info("Neo4j query (#{time_in_msec duration}ms):\n#{query} Params: #{inspect params}")
+
+    case query_res do
+      {:ok, res} -> res
       {:error, [%{ "code" => code, "message" => message }]} ->
-        Logger.error(code <> message <> "\nQuery:\n" <> query)
+        Logger.error("#{code} #{message}\nQuery:\n#{query}")
 
         raise message
     end
+  end
+
+  defp time_in_msec(time_in_microsec) do
+    time_in_microsec / 1000 |> Float.round(1)
   end
 end
