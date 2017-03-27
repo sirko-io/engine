@@ -33,3 +33,10 @@
 ### Added
 
 - Each Neo4j query gets logged when the log level is `info`. It will help in debugging slow queries.
+
+## v0.0.2 (27 March 2017)
+
+### Fixed
+
+- An issue in IE11 which broke the sirko client for IE11 users.
+- An issue with starting the project when the url to a Neo4j instance had a trailing slash.
