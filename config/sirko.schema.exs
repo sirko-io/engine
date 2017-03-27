@@ -82,13 +82,5 @@ https://github.com/bitwalker/conform.
       to: "sirko.web.client_url"
     ]
   ],
-  transforms: [
-    "neo4j_sips.Elixir.Neo4j.url": fn conf ->
-      [{key, url}] = Conform.Conf.get(conf, "neo4j_sips.Elixir.Neo4j.url")
-
-      # the trailing slash must be removed to prevent Neo4j Sips from crashing
-      String.replace_trailing(url, "/", "")
-    end
-  ],
   validators: []
 ]
