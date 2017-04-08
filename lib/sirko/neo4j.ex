@@ -13,7 +13,7 @@ defmodule Sirko.Neo4j do
   """
   def query(query, params \\ %{}) do
     {duration, query_res} = :timer.tc(
-      Bolt, :query, [Bolt.conn(), query, params]
+      Bolt, :query, [Bolt.pool_name(), query, params]
     )
 
     Logger.info fn ->

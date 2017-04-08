@@ -2,7 +2,7 @@ defmodule Support.Neo4jHelpers do
   alias Bolt.Sips, as: Bolt
 
   def execute_query(query, params \\ %{ }) do
-    case Bolt.query(Bolt.conn, query, params) do
+    case Bolt.query(Bolt.pool_name(), query, params) do
       {:ok, res} ->
         res
       {:error, [code: _code, message: message]} ->
@@ -11,7 +11,7 @@ defmodule Support.Neo4jHelpers do
   end
 
   def cleanup_db do
-    Bolt.query!(Bolt.conn, "MATCH (n) DETACH DELETE n")
+    Bolt.query!(Bolt.pool_name(), "MATCH (n) DETACH DELETE n")
   end
 
   def load_fixture(name) do
