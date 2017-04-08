@@ -11,8 +11,6 @@ defmodule Sirko.Session do
 
   @default_key_length 32
 
-  @inactive_session_in 3600 * 1000 # 1 hour
-
   @chunk_sessions_on 100 # how many session keys must be process in one cypher query
 
   @doc """
@@ -50,13 +48,13 @@ defmodule Sirko.Session do
   end
 
   @doc """
-  Finds and expires sessions which are inactive for `@inactive_session_in` milliseconds.
+  Finds and expires sessions which are inactive for `inactive_session_in` milliseconds.
   Short sessions get removed, they don't bring any value to the prediction model.
   """
-  def expire_all_inactive do
-    Db.Session.remove_all_short(@inactive_session_in)
+  def expire_all_inactive(inactive_session_in) do
+    Db.Session.remove_all_short(inactive_session_in)
 
-    Db.Session.all_inactive(@inactive_session_in)
+    Db.Session.all_inactive(inactive_session_in)
     |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
     |> Enum.each(fn(keys) -> expire(keys) end)
   end

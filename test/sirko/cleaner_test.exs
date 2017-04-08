@@ -14,35 +14,35 @@ defmodule Sirko.CleanerTest do
     :ok
   end
 
-  describe "clean_up/0" do
+  describe "clean_up/1" do
     setup do
       load_fixture("diverse_sessions")
       load_fixture("transitions")
 
-      :ok
+      {:ok, [stale_session_in: 3600 * 1000 * 24 * 7]}
     end
 
-    test "excludes stale sessions from transitions" do
+    test "excludes stale sessions from transitions", %{stale_session_in: stale_session_in} do
       transition = transition_between_paths("/list", "/popular")
 
       assert transition.properties["count"] == 4
 
-      clean_up()
+      clean_up(stale_session_in)
 
       transition = transition_between_paths("/list", "/popular")
 
       assert transition.properties["count"] == 1
     end
 
-    test "removes stale sessions" do
+    test "removes stale sessions", %{stale_session_in: stale_session_in} do
       assert count_sessions("skey1") == 3
 
-      clean_up()
+      clean_up(stale_session_in)
 
       assert count_sessions("skey1") == 0
     end
 
-    test "removes idle transitions" do
+    test "removes idle transitions", %{stale_session_in: stale_session_in} do
       query = """
         MATCH ()-[t:TRANSITION]->()
         WHERE t.count = 0
@@ -53,17 +53,17 @@ defmodule Sirko.CleanerTest do
 
       assert exist == true
 
-      clean_up()
+      clean_up(stale_session_in)
 
       [%{"exist" => exist}] = execute_query(query)
 
       assert exist == false
     end
 
-    test "removes lonely pages" do
+    test "removes lonely pages", %{stale_session_in: stale_session_in} do
       assert page_exist?("/single") == true
 
-      clean_up()
+      clean_up(stale_session_in)
 
       assert page_exist?("/single") == false
     end

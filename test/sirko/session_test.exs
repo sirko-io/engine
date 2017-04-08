@@ -97,15 +97,15 @@ defmodule Sirko.SessionTest do
     end
   end
 
-  describe "expire_all_inactive/0" do
+  describe "expire_all_inactive/1" do
     setup do
       load_fixture("diverse_sessions")
 
-      :ok
+      {:ok, [inactive_session_in: 3600 * 1000]}
     end
 
-    test "removes short sessions" do
-      expire_all_inactive()
+    test "removes short sessions", %{inactive_session_in: inactive_session_in} do
+      expire_all_inactive(inactive_session_in)
 
       query = """
         MATCH ()-[s:SESSION { key: {key} }]->()
@@ -115,8 +115,8 @@ defmodule Sirko.SessionTest do
       assert items_count(query, "skey23") == 0
     end
 
-    test "expires inactive sessions" do
-      expire_all_inactive()
+    test "expires inactive sessions", %{inactive_session_in: inactive_session_in} do
+      expire_all_inactive(inactive_session_in)
 
       query = """
         MATCH ()-[s:SESSION]->(:Page { exit: true })
@@ -126,8 +126,8 @@ defmodule Sirko.SessionTest do
       assert items_count(query) == 7
     end
 
-    test "tracks transitions" do
-      expire_all_inactive()
+    test "tracks transitions", %{inactive_session_in: inactive_session_in} do
+      expire_all_inactive(inactive_session_in)
 
       query = """
         MATCH ()-[t:TRANSITION]->(:Page { exit: true })

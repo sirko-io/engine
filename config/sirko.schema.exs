@@ -80,7 +80,50 @@ https://github.com/bitwalker/conform.
       doc: "A url of a client application to make predictions for.",
       hidden: false,
       to: "sirko.web.client_url"
+    ],
+    "sirko.engine.inactive_session_in": [
+      commented: false,
+      datatype: :integer,
+      default: 60,
+      doc: """
+           Time in minutes when sessions without activity get treated as inactive.
+           Inactive sessions get expired and the tracking gets stopped for them.
+           If a user comes with an expired session, a new session gets started.
+           """,
+      hidden: true,
+      to: "sirko.engine.inactive_session_in"
+    ],
+    "sirko.engine.stale_session_in": [
+      commented: false,
+      datatype: :integer,
+      default: 7,
+      doc: """
+           Duration in days of keeping expired sessions in the DB. Expired sessions which
+           live longer that this value get removed from the DB and gets excluded by the prediction model.
+           You might need to increase this value, if your site don't get big traffic.
+           A higher number will allow the engine to get enough data to make predictions.
+           On the other hand, if the navigation of your site changes too often,
+           it is recommended to keep a lower value in order to exclude noise which effect
+           correctness of the prediction.
+           """,
+      hidden: false,
+      to: "sirko.engine.stale_session_in"
     ]
+  ],
+  transforms: [
+    "sirko.engine.inactive_session_in": fn conf ->
+      [{_, time_in_mins}] = Conform.Conf.get(conf, "sirko.engine.inactive_session_in")
+
+      # converts time to milliseconds
+      time_in_mins * 60 * 1000
+    end,
+
+    "sirko.engine.stale_session_in": fn conf ->
+      [{_, time_in_days}] = Conform.Conf.get(conf, "sirko.engine.stale_session_in")
+
+      # converts time to milliseconds
+      time_in_days * 24 * 60 * 60 * 1000
+    end
   ],
   validators: []
 ]

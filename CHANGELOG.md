@@ -33,6 +33,8 @@
 ### Added
 
 - Each Neo4j query gets logged when the log level is `info`. It will help in debugging slow queries.
+- Duration of keeping expired sessions in the DB can be configured via `sirko.engine.stale_session_in` config setting.
+    To get more details about this setting check the config/sirko.conf file.
 
 ## v0.0.2 (27 March 2017)
 
