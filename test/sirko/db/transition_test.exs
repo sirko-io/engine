@@ -1,8 +1,6 @@
 defmodule Sirko.Db.TransitionTest do
   use ExUnit.Case
 
-  doctest Sirko.Db.Transition
-
   import Support.Neo4jHelpers
 
   alias Sirko.Db, as: Db
@@ -104,8 +102,12 @@ defmodule Sirko.Db.TransitionTest do
       :ok
     end
 
-    test "predicts the next path for the current path" do
-      assert Db.Transition.predict("/list") == "/details"
+    test "returns a map containing info about the next page to be visited" do
+      assert Db.Transition.predict("/list") == %{
+        "total" => 14,
+        "count" => 6,
+        "path" => "/details"
+      }
     end
 
     test "returns nil when the current page is unknown" do
@@ -113,7 +115,12 @@ defmodule Sirko.Db.TransitionTest do
     end
 
     test "takes the path with the most fresh transitions when there are 2 paths with identical counts" do
-      assert Db.Transition.predict("/about") == "/popular"
+      assert Db.Transition.predict("/about") == %{
+        "total" => 4,
+        "count" => 2,
+        "path" => "/popular"
+      }
+
     end
   end
 

@@ -41,21 +41,35 @@ defmodule Sirko.Db.Transition do
   end
 
   @doc """
-  Returns the path of a page which most likely will be visited by a user.
+  Returns a map representing info about a possible page which most likely will be
+  visited by a user. The returned map contains the path to the page, the count
+  of transitions made to the page and the total number of transitions made from the current page.
+
+  Examples
+
+     iex> Sirko.Db.Transition.predict("/details")
+     %{"path" => "/project", "count" => 5, "total" => 15}
+
   """
   def predict(current_path) do
     query = """
-      MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(next_page:Page)
-      RETURN next_page.path AS next_path
+      MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(p:Page)
+
+      WITH t, p
       ORDER BY t.count DESC, t.updated_at DESC
       LIMIT 1
+
+      WITH p.path AS path, t.count AS count
+
+      MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(:Page)
+      WITH sum(t.count) AS total, count, path
+
+      RETURN path, count, total
     """
 
     case Neo4j.query(query, %{ current_path: current_path }) do
-      [res] ->
-        res["next_path"]
-      _ ->
-        nil
+      [res] -> res
+      _ -> nil
     end
   end
 

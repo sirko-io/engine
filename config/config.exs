@@ -22,7 +22,8 @@ config :sirko, :scheduler,
 # To get more details about them, read the config schema: config/sirko.schema.exs
 config :sirko, :engine,
   inactive_session_in: 3600 * 1000,
-  stale_session_in: 3600 * 1000 * 24 * 7
+  stale_session_in: 3600 * 1000 * 24 * 7,
+  confidence_threshold: 0.2
 
 config :logger, :console,
   level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom,

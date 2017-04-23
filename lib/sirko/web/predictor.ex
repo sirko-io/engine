@@ -11,9 +11,12 @@ defmodule Sirko.Web.Predictor do
   alias Sirko.Predictor
 
   def call(conn) do
+    confidence_threshold = Application.get_env(:sirko, :engine)
+    |> Keyword.fetch!(:confidence_threshold)
+
     current_path = conn.query_params["cur"]
 
-    next_path = Predictor.predict(current_path) || ""
+    next_path = Predictor.predict(current_path, confidence_threshold) || ""
 
     log_prediction(current_path, next_path)
 

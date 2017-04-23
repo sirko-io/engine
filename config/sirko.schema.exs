@@ -108,6 +108,18 @@ https://github.com/bitwalker/conform.
            """,
       hidden: false,
       to: "sirko.engine.stale_session_in"
+    ],
+    "sirko.engine.confidence_threshold": [
+      commented: false,
+      datatype: :float,
+      default: 0.2,
+      doc: """
+           A threshold of confidence to be met in order to add the prerender hint. When it is set to 1,
+           the prerender hint will only be added in case of 100% confidence that the current user will visit
+           a predicted page.
+           """,
+      hidden: false,
+      to: "sirko.engine.confidence_threshold"
     ]
   ],
   transforms: [
