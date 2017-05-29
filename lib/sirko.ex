@@ -7,6 +7,7 @@ defmodule Sirko do
     import Supervisor.Spec, warn: false
 
     children = [
+      worker(Bolt.Sips, [get_env(:bolt_sips, Bolt)]),
       Sirko.Web.start_link(get_env(:sirko, :web)),
       supervisor(Sirko.Scheduler.Supervisor, [get_env(:sirko, :scheduler)])
     ]
