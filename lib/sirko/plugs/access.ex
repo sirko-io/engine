@@ -9,11 +9,8 @@ defmodule Sirko.Plugs.Access do
   def init(opts), do: opts
 
   def call(conn, _ \\ []) do
-    client_url = Application.get_env(:sirko, :web)
-    |> Keyword.get(:client_url)
-
     # TODO: find a way to cache it
-    {:ok, reg} = Regex.compile("^#{client_url}")
+    {:ok, reg} = Regex.compile("^#{client_url()}")
 
     case get_req_header(conn, "referer") do
       [referer] ->
@@ -31,5 +28,11 @@ defmodule Sirko.Plugs.Access do
     conn
     |> send_resp(422, "")
     |> halt
+  end
+
+  defp client_url do
+    :sirko
+    |> Application.get_env(:web)
+    |> Keyword.get(:client_url)
   end
 end

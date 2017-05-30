@@ -9,6 +9,7 @@ defmodule Sirko.Web do
   require Logger
 
   alias Sirko.Web.{Session, Predictor}
+  alias Plug.Adapters.Cowboy
 
   plug Plug.Logger
   plug Plug.Static,
@@ -32,9 +33,9 @@ defmodule Sirko.Web do
 
     client_url = Keyword.get(opts, :client_url)
 
-    Logger.info("Expecting requests from #{client_url}")
+    Logger.info fn -> "Expecting requests from #{client_url}" end
 
-    Plug.Adapters.Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
+    Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
   end
 
   get "/predict" do
@@ -46,15 +47,17 @@ defmodule Sirko.Web do
         |> send_resp(422, "")
         |> halt
       _ ->
-        Session.call(conn)
+        conn
+        |> Session.call
         |> Predictor.call
         |> halt
     end
   end
 
   if Mix.env == :dev do
-    # This action is only require for the dev environment. The prod environment contains
-    # the js client in the priv/static folder. Hence, the Plug.Static is able to serve it.
+    # This action is only required for the dev environment. The prod environment
+    # contains the js client in the priv/static folder. Hence, the Plug.Static
+    # is able to serve it.
     get "/assets/client.js" do
       {:ok, content} = File.read("node_modules/sirko/dist/sirko.js")
 

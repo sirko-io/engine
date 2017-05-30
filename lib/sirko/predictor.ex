@@ -6,12 +6,13 @@ defmodule Sirko.Predictor do
   Otherwise, nil.
   """
   def predict(current_path, threshold) do
-    Db.Transition.predict(current_path)
+    current_path
+    |> Db.Transition.predict
     |> calc_confidence
     |> check_confidence(threshold)
   end
 
-  defp calc_confidence(nil), do: { nil, -1 }
+  defp calc_confidence(nil), do: {nil, -1}
   defp calc_confidence(info) do
     %{
       "path"  => path,
@@ -19,9 +20,9 @@ defmodule Sirko.Predictor do
       "total" => total
     } = info
 
-    { path, count / total }
+    {path, count / total}
   end
 
-  defp check_confidence({ path, confidence }, threshold) when confidence >= threshold, do: path
+  defp check_confidence({path, confidence}, threshold) when confidence >= threshold, do: path
   defp check_confidence(_, _), do: nil
 end

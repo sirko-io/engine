@@ -21,7 +21,7 @@ defmodule Sirko.Db.Session do
       SET s.occurred_at = timestamp()
     """
 
-    Neo4j.query(query, %{ key: session_key, path: current_path })
+    Neo4j.query(query, %{key: session_key, path: current_path})
   end
 
   @doc """
@@ -47,7 +47,11 @@ defmodule Sirko.Db.Session do
 
     Neo4j.query(
       query,
-      %{ key: session_key, referrer_path: referrer_path, current_path: current_path }
+      %{
+        key:           session_key,
+        referrer_path: referrer_path,
+        current_path:  current_path
+      }
     )
   end
 
@@ -76,7 +80,7 @@ defmodule Sirko.Db.Session do
           new_s.count = 1
     """
 
-    Neo4j.query(query, %{ keys: session_keys })
+    Neo4j.query(query, %{keys: session_keys})
   end
 
   @doc """
@@ -91,8 +95,8 @@ defmodule Sirko.Db.Session do
       LIMIT 1
     """
 
-    case Neo4j.query(query, %{ key: session_key }) do
-      [%{ "active" => active }] ->
+    case Neo4j.query(query, %{key: session_key}) do
+      [%{"active" => active}] ->
         active
       _ ->
         false
@@ -115,7 +119,7 @@ defmodule Sirko.Db.Session do
       RETURN collect(key) as keys
     """
 
-    [%{"keys" => keys}] = Neo4j.query(query, %{ time: time })
+    [%{"keys" => keys}] = Neo4j.query(query, %{time: time})
 
     keys
   end
@@ -141,7 +145,7 @@ defmodule Sirko.Db.Session do
       DETACH DELETE last_hit
     """
 
-    Neo4j.query(query, %{ time: time })
+    Neo4j.query(query, %{time: time})
   end
 
   @doc """
@@ -154,7 +158,7 @@ defmodule Sirko.Db.Session do
       RETURN collect(s.key) as keys
     """
 
-    [%{"keys" => keys}] = Neo4j.query(query, %{ time: time })
+    [%{"keys" => keys}] = Neo4j.query(query, %{time: time})
 
     keys
   end
@@ -171,6 +175,6 @@ defmodule Sirko.Db.Session do
       DELETE sess
     """
 
-    Neo4j.query(query, %{ time: time })
+    Neo4j.query(query, %{time: time})
   end
 end

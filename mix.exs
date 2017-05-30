@@ -40,7 +40,8 @@ defmodule Sirko.Mixfile do
       {:bolt_sips, "~> 0.3"},
       {:rollbax, "~> 0.8"},
       {:distillery, "~> 1.0", require: false},
-      {:conform, "~> 2.1", require: false}
+      {:conform, "~> 2.1", require: false},
+      {:credo, "~> 0.7.4", only: [:dev, :test], runtime: false}
     ]
   end
 end

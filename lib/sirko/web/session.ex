@@ -14,18 +14,15 @@ defmodule Sirko.Web.Session do
 
   alias Sirko.Session
 
-  @session_key_name "_spio_skey"
+  @cookie_name "_spio_skey"
 
   def call(conn) do
-    cookie_max_age = Application.get_env(:sirko, :engine)
-    |> Keyword.fetch!(:inactive_session_in) |> div(1000)
-
-    { current_path, referrer_path, session_key } = extract_details(conn)
+    {current_path, referrer_path, session_key} = extract_details(conn)
 
     session_key = Session.track(current_path, referrer_path, session_key)
 
     conn
-    |> put_resp_cookie(@session_key_name, session_key, [max_age: cookie_max_age])
+    |> put_resp_cookie(@cookie_name, session_key, [max_age: cookie_max_age()])
   end
 
   defp extract_details(conn) do
@@ -34,8 +31,15 @@ defmodule Sirko.Web.Session do
 
     conn = fetch_cookies(conn)
 
-    session_key = conn.req_cookies[@session_key_name]
+    session_key = conn.req_cookies[@cookie_name]
 
-    { current_path, referrer_path, session_key }
+    {current_path, referrer_path, session_key}
+  end
+
+  defp cookie_max_age do
+    :sirko
+    |> Application.get_env(:engine)
+    |> Keyword.fetch!(:inactive_session_in)
+    |> div(1000)
   end
 end

@@ -3,9 +3,10 @@ defmodule Sirko.Cleaner do
   Takes care of removing needless and harmful data.
   """
 
-  alias Sirko.Db, as: Db
+  alias Sirko.Db
 
-  @chunk_sessions_on 100 # how many session keys must be process in one cypher query
+  # how many session keys must be processed in one cypher query
+  @chunk_sessions_on 100
 
   @doc """
   Finds sessions which are expired for `stale_session_in` milliseconds and excludes them
@@ -16,7 +17,8 @@ defmodule Sirko.Cleaner do
   """
   def clean_up(stale_session_in) do
     # TODO: do we need to do this operation in a transaction?
-    Db.Session.all_stale(stale_session_in)
+    stale_session_in
+    |> Db.Session.all_stale
     |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
     |> Enum.each(fn(keys) -> Db.Transition.exclude_sessions(keys) end)
 
