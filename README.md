@@ -29,7 +29,8 @@ In order to save a battery of users on mobile devices the engine doesn't track s
   - [Client integration](#client-integration)
 - [Getting accuracy](#getting-accuracy)
 - [Catching errors](#catching-errors)
-- [Development](#development)
+- [Contributing](/CONTRIBUTING.md)
+- [Changelog](/CHANGELOG.md)
 - [License](#license)
 
 # Installation
@@ -301,58 +302,6 @@ The code example uses the onload callback to be sure that all dependencies get l
 ## Catching errors
 
 You might want to catch errors which happen to the engine and report them. The engine got integrated with [Rollbar](https://rollbar.com) which notifies you about errors via an email or a messenger (it supports a few). To start using it, register an account and add your rollbar access token to the `sirko.conf`.
-
-## Development
-
-### Dependencies
-
- - [Elixir](http://elixir-lang.org/install.html) 1.4.*
- - [Neo4j](https://neo4j.com/download/) 3.*
- - [Npm](https://npmjs.com)
-
-If you use [Docker](https://www.docker.com/), execute the following command to install Neo4j:
-
-```
-$ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7687:7687 -p 7474:7474 neo4j:3.1
-```
-
-The web interface of Neo4j is accessible on [http://localhost:7474](http://localhost:7474).
-
-### Setup
-
-1. Clone your fork.
-2. Install dependencies:
-
-    ```
-    $ mix deps.get
-    $ npm install
-    ```
-
-3. Set a url to your site:
-
-    ```
-    # .profile
-    export SIRKO_CLIENT_URL="http://localhost:3000"
-    ```
-
-4. Launch the app:
-
-    ```
-    $ iex -S mix
-    ```
-
-5. [Integrate](#client-integration) the sirko client into a site you want to use for testing.
-
-**Note:** If you don't have a site to check your changes, you can clone [this demo site](https://github.com/sirko-io/demo) and locally set it up.
-
-### Testing
-
-The app uses [ExUnit](http://elixir-lang.org/docs/stable/ex_unit/ExUnit.html) as a testing framework.
-Execute the following command to launch the tests:
-
-```
-$ mix test
-```
 
 ## License
 
