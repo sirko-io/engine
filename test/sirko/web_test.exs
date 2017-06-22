@@ -51,7 +51,7 @@ defmodule Sirko.WebTest do
   end
 
   defp call(current_path) do
-    conn(:get, "/predict?cur=#{current_path}")
+    conn(:get, "/predict?cur=#{current_path}&ref=/")
     |> put_req_header("referer", "http://app.io")
     |> Web.call(@opts)
   end

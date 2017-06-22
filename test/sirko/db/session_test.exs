@@ -15,47 +15,7 @@ defmodule Sirko.Db.SessionTest do
     :ok
   end
 
-  describe "create/2" do
-    test "creates a relation between the starting point and the given page" do
-      session_key  = "skey1"
-      current_path = "/popular"
-
-      Db.Session.create(session_key, current_path)
-
-      query = """
-        MATCH (start:Page)-[session:SESSION { key: {key} }]->(current:Page)
-        RETURN start, current, session
-      """
-
-      [%{
-        "start"   => start_page,
-        "current" => current_page,
-        "session" => session
-      }] = execute_query(query, %{ key: session_key })
-
-      assert start_page.properties["start"] == true
-      assert current_page.properties["path"] == current_path
-      assert session.properties["occurred_at"] != nil
-      assert session.properties["count"] == 1
-    end
-
-    test "does not create extra nodes when the page exists" do
-      Db.Session.create("skey1", "/list")
-      Db.Session.create("skey2", "/list")
-
-      assert count_pages() == 2
-    end
-  end
-
-  describe "track/2 the reffer is not present" do
-    test "returns nil" do
-      res = Db.Session.track("skey1", nil, "/list")
-
-      assert res == nil
-    end
-  end
-
-  describe "track/2 the reffer is present" do
+  describe "track/2" do
     setup do
       info = [
         session_key:   "skey1",
@@ -181,23 +141,6 @@ defmodule Sirko.Db.SessionTest do
       session_keys = Db.Session.all_inactive(3600 * 1000)
 
       assert session_keys |> Enum.sort == ["skey20", "skey21", "skey22", "skey23"]
-    end
-  end
-
-  describe "remove_all_short/1" do
-    setup do
-      load_fixture("diverse_sessions")
-
-      :ok
-    end
-
-    test "removes sessions which are inactive for 1 hr and have only one transition" do
-      # make sure there is data for testing
-      assert count_sessions("skey23") == 1
-
-      Db.Session.remove_all_short(3600 * 1000)
-
-      assert count_sessions("skey23") == 0
     end
   end
 

@@ -9,20 +9,24 @@ defmodule Sirko.Session do
 
   alias Sirko.Db, as: Db
 
-  @default_key_length 32
+  @default_key_length 32 # bytes
 
   # how many session keys must be processed in one cypher query
   @chunk_sessions_on 100
 
   @doc """
-  Creates a new session relation in the DB and returns a unique session key
-  which is used later in order to identify a being tracked session.
+  Do nothing if the referrer is nil. We cannot track a transition,
+  because it hasn't happened yet.
   """
-  def track(current_path, _, nil) do
+  def track(_, nil, _), do: nil
+
+  @doc """
+  Creates a unique session key and tracks the transition.
+  """
+  def track(current_path, referrer_path, nil) do
     session_key = generate_key()
 
-    Db.Session.create(session_key, current_path)
-
+    Db.Session.track(session_key, referrer_path, current_path)
     session_key
   end
 
@@ -50,11 +54,8 @@ defmodule Sirko.Session do
 
   @doc """
   Finds and expires sessions which are inactive for `inactive_session_in` milliseconds.
-  Short sessions get removed, they don't bring any value to the prediction model.
   """
   def expire_all_inactive(inactive_session_in) do
-    Db.Session.remove_all_short(inactive_session_in)
-
     inactive_session_in
     |> Db.Session.all_inactive
     |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])

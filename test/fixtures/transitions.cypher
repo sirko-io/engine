@@ -1,4 +1,4 @@
-MERGE (start:Page { start: true })
+MERGE (start:Page { path: "/" })
 MERGE (list:Page { path: "/list" })
 MERGE (popular:Page { path: "/popular" })
 MERGE (details:Page { path: "/details" })

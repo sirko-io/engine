@@ -25,7 +25,7 @@ defmodule Sirko.Db.TransitionTest do
     test "records transitions between pages", %{ session_keys: session_keys } do
       Db.Transition.track(session_keys)
 
-      start_list = transition_between_pages({"start", true}, {"path", "/list"})
+      start_list = transition_between_pages({"path", "/"}, {"path", "/list"})
 
       assert start_list.properties["count"] == 2
       assert start_list.properties["updated_at"] != nil

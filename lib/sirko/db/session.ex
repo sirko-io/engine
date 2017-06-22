@@ -10,27 +10,6 @@ defmodule Sirko.Db.Session do
   alias Sirko.Neo4j, as: Neo4j
 
   @doc """
-  Creates a relation between the starting point and a page having the given path.
-  If the page doesn't exist, it will be created first.
-  """
-  def create(session_key, current_path) do
-    query = """
-      MERGE (start:Page { start: true })
-      MERGE (current:Page { path: {path} })
-      CREATE (start)-[s:SESSION { key: {key}, count: 1 }]->(current)
-      SET s.occurred_at = timestamp()
-    """
-
-    Neo4j.query(query, %{key: session_key, path: current_path})
-  end
-
-  @doc """
-  Do nothing if the referrer is nil. We cannot track a transition,
-  because it hasn't happened yet.
-  """
-  def track(_, nil, _), do: nil
-
-  @doc """
   Creates a session relation between 2 visited pages if it is
   a first transition between those pages during the current session.
   Otherwise, the relation will be updated to reflect a number of times
@@ -122,30 +101,6 @@ defmodule Sirko.Db.Session do
     [%{"keys" => keys}] = Neo4j.query(query, %{time: time})
 
     keys
-  end
-
-  @doc """
-  Removes inactive sessions having one transition. A session is considered to be inactive
-  if the last transition happened more than the given time in milliseconds.
-  """
-  def remove_all_short(time) do
-    query = """
-      MATCH ()-[s:SESSION]->()
-
-      WITH s
-      ORDER BY s.occurred_at
-
-      WITH s.key AS key, collect(s) AS chain
-      WITH chain, last(chain) AS last_hit
-      WHERE last_hit.expired_at IS NULL AND timestamp() - last_hit.occurred_at > {time}
-
-      WITH last_hit, size(chain) AS chain_length
-      WHERE chain_length = 1
-
-      DETACH DELETE last_hit
-    """
-
-    Neo4j.query(query, %{time: time})
   end
 
   @doc """

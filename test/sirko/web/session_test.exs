@@ -14,8 +14,16 @@ defmodule Sirko.Web.SessionTest do
     :ok
   end
 
-  test "assigns a session key" do
+  test "does not assign a session key when the transition hasn't happened yet" do
     conn = conn(:get, "/predict?cur=/list")
+    |> fetch_query_params
+    |> call
+
+    assert conn.resp_cookies["_spio_skey"] == nil
+  end
+
+  test "assigns a session key when the transition has happened" do
+    conn = conn(:get, "/predict?cur=/list&ref=/home")
     |> fetch_query_params
     |> call
 

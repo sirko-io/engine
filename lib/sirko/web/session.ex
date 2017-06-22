@@ -22,7 +22,7 @@ defmodule Sirko.Web.Session do
     session_key = Session.track(current_path, referrer_path, session_key)
 
     conn
-    |> put_resp_cookie(@cookie_name, session_key, [max_age: cookie_max_age()])
+    |> put_session_key(session_key)
   end
 
   defp extract_details(conn) do
@@ -34,6 +34,13 @@ defmodule Sirko.Web.Session do
     session_key = conn.req_cookies[@cookie_name]
 
     {current_path, referrer_path, session_key}
+  end
+
+  defp put_session_key(conn, nil), do: conn
+
+  defp put_session_key(conn, session_key) do
+    conn
+    |> put_resp_cookie(@cookie_name, session_key, [max_age: cookie_max_age()])
   end
 
   defp cookie_max_age do

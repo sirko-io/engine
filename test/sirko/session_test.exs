@@ -14,31 +14,40 @@ defmodule Sirko.SessionTest do
     :ok
   end
 
-  describe "track/3" do
+  describe "track/3 the reffer is not given" do
+    test "returns nil" do
+       assert track("/popular", nil, nil) == nil
+    end
+  end
+
+  describe "track/3 the session key is not given" do
+    test "starts a new session with a unique key" do
+      assert track("/popular", "/", nil) != track("/popular", "/", nil)
+    end
+
+    test "adds a new visited page to a newly started session" do
+      session_key = track("/popular", "/", nil)
+
+      assert count_sessions(session_key) == 1
+    end
+  end
+
+  describe "track/3 the session key is given" do
     setup do
       session_key = "skey20"
 
       load_fixture("diverse_sessions")
 
-      { :ok, [session_key: session_key] }
+      {:ok, [session_key: session_key]}
     end
 
-    test "starts a new session with a unique key when a session key is not given" do
-      assert track("/popular", nil, nil) != track("/popular", nil, nil)
-    end
-
-    test "adds a new visited page to the existing session", %{ session_key: session_key } do
+    test "adds a new visited page to the existing session", %{session_key: session_key} do
       track("/details", "/list", session_key)
 
-      query = """
-        MATCH ()-[s:SESSION { key: {key} }]->()
-        RETURN count(s) AS items_count
-      """
-
-      assert items_count(query, session_key) == 3
+      assert count_sessions(session_key) == 3
     end
 
-    test "returns the given session key", %{ session_key: session_key } do
+    test "returns the given session key", %{session_key: session_key} do
       assert track("/details", "/list", session_key) == session_key
     end
 
@@ -47,53 +56,48 @@ defmodule Sirko.SessionTest do
 
       track("/details", "/list", invalid_session_key)
 
-      query = """
-        MATCH ()-[s:SESSION { key: {key} }]->()
-        RETURN count(s) AS items_count
-      """
-
-      assert items_count(query, invalid_session_key) == 0
+      assert count_sessions(invalid_session_key) == 0
     end
 
-    test "starts a new session when the session key is invalid" do
-      invalid_session_key = "fake-skey"
+    test "starts a new session when the session key is expired" do
+      expired_session_key = "skey10"
 
-      session_key = track("/details", "/list", invalid_session_key)
+      session_key = track("/details", "/list", expired_session_key)
 
       assert session_key != nil
-      assert session_key != invalid_session_key
+      assert session_key != expired_session_key
     end
   end
 
   describe "expire/1" do
     setup do
-      session_keys = ["skey10"]
+      session_keys = ["skey20"]
 
       load_fixture("diverse_sessions")
 
-      { :ok, [session_keys: session_keys] }
+      {:ok, [session_keys: session_keys]}
     end
 
-    test "expires the session having the given key", %{ session_keys: session_keys } do
+    test "expires the session having the given key", %{session_keys: session_keys} do
       expire(session_keys)
 
       query = """
-        MATCH (:Page { start: true })-[s:SESSION * { key: {key} }]->(:Page { exit: true })
+        MATCH ()-[s:SESSION { key: {key} }]->(:Page { exit: true })
         RETURN count(s) AS items_count
       """
 
-      assert items_count(query, List.first(session_keys)) == 2
+      assert items_count(query, List.first(session_keys)) == 1
     end
 
-    test "tracks transitions", %{ session_keys: session_keys } do
+    test "tracks transitions", %{session_keys: session_keys} do
       expire(session_keys)
 
       query = """
-        MATCH (:Page { start: true })-[t:TRANSITION * ]->(:Page { exit: true })
+        MATCH ()-[t:TRANSITION]->(:Page { exit: true })
         RETURN count(t) AS items_count
       """
 
-      assert items_count(query) == 2
+      assert items_count(query) == 1
     end
   end
 
@@ -104,17 +108,6 @@ defmodule Sirko.SessionTest do
       {:ok, [inactive_session_in: 3600 * 1000]}
     end
 
-    test "removes short sessions", %{inactive_session_in: inactive_session_in} do
-      expire_all_inactive(inactive_session_in)
-
-      query = """
-        MATCH ()-[s:SESSION { key: {key} }]->()
-        RETURN count(s) AS items_count
-      """
-
-      assert items_count(query, "skey23") == 0
-    end
-
     test "expires inactive sessions", %{inactive_session_in: inactive_session_in} do
       expire_all_inactive(inactive_session_in)
 
@@ -123,7 +116,7 @@ defmodule Sirko.SessionTest do
         RETURN count(s) AS items_count
       """
 
-      assert items_count(query) == 7
+      assert items_count(query) == 8
     end
 
     test "tracks transitions", %{inactive_session_in: inactive_session_in} do
@@ -134,7 +127,7 @@ defmodule Sirko.SessionTest do
         RETURN count(t) AS items_count
       """
 
-      assert items_count(query) == 2
+      assert items_count(query) == 3
     end
   end
 
