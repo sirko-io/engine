@@ -36,7 +36,9 @@ environment :prod do
     # It doesn't work when the priv/static folder is added to the root directory
     # of the released program, it must be placed in the lib directory of the app.
     {:mkdir, "lib/sirko-<%= release_version %>/priv/static"},
+
     {:copy, "node_modules/sirko/dist/sirko.js", "lib/sirko-<%= release_version %>/priv/static/client.js"},
+    {:copy, "node_modules/sirko/dist/sirko_sw.js", "lib/sirko-<%= release_version %>/priv/static/sirko_sw.js"},
 
     # adds the config file to the root directory of the released program
     {:copy, "config/sirko.conf", "sirko.conf"}
