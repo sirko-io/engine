@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0 (not released yet)
+## v0.1.0 (15 July 2017)
 
 ### Changed
 
@@ -43,7 +43,27 @@
     sirko('useFallback', true);
     ```
 
-    Since it is based on a service worker, the site using the engine must be served through the secure connection (HTTPS).
+    Since it is based on a service worker, the site which uses the engine must be served over the secure connection. Also, the site must serve a service worker script from the root of its domain, example:
+
+    ```
+    https://demo.sirko.io/sirko_sw.js
+    ```
+
+    The easiest way is to proxy the request to the engine. If you use Nginx, here is an example:
+
+    ```
+    location = /sirko_sw.js {
+      proxy_pass http://127.0.0.1:4000/assets/sirko_sw.js;
+    }
+    ```
+
+### Fixed
+
+- Missing transitions when a user with the expired session continued navigating site ([#29](https://github.com/sirko-io/engine/issues/29)).
+
+### Removed
+
+- The starting point which was described in [this article](https://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html) got removed. It didn't bring any value to the prediction model.
 
 ## v0.0.2 (27 March 2017)
 

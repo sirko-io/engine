@@ -8,7 +8,7 @@ As soon as the engine predicts the next page, a client part of the solution adds
 - A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
 - How it works in Chrome you can read [here](https://www.chromium.org/developers/design-documents/prerender).
 
-Currently, this solution is only recommended for public pages which meet the following criteria:
+Currently, this solution is only recommended to public pages which meet the following criteria:
 
 - **pages aren't personalized**. There are bugs related to a transition from the anonymous state to the authorized one.
 - **pages aren't too diverse**. For instance, if you have an online store with a lot of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
@@ -17,7 +17,7 @@ Currently, this solution is only recommended for public pages which meet the fol
 
 ### Users on mobile devices
 
-In order to save a battery of users on mobile devices the engine doesn't track such users.
+In order to save a battery of users on mobile devices the engine ignores such users.
 
 ## Table of contents
 
@@ -44,7 +44,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.0.2/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.1.0/config/sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -59,7 +59,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
     $ sudo docker run -d --name sirko -p 4000:4000 --restart always -v ~/sirko.conf:/usr/local/sirko/sirko.conf dnesteryuk/sirko:latest
     ```
 
-    **IMPORTANT:** If you host the Neo4j instance on your server, you have to make sure the engine has access to it. To do that, use a network argument while launching the container:
+    **IMPORTANT:** If you host the Neo4j instance on your server, you have to be sure the engine has access to it. To do that, use a network argument while launching the container:
 
     ```
     $ sudo docker run -d --name sirko -p 4000:4000 --restart always --network host -v ~/sirko.conf:/usr/local/sirko/sirko.conf dnesteryuk/sirko:latest
@@ -82,7 +82,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.0.2/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.1.0/config/sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -91,7 +91,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
     $ nano sirko.conf
     ```
 
-    Please, use a `http://neo4j:7474` url for the `neo4j.url` setting.
+    Please, use a `http://neo4j:7687` url for the `neo4j.url` setting.
 
 3. Create a docker-compose.yml file:
 
@@ -110,7 +110,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
         environment:
           - NEO4J_AUTH=none
         ports:
-          - "7474:7474"
+          - "7687:7687"
 
       sirko:
         image: dnesteryuk/sirko:latest
@@ -141,8 +141,6 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 
   the engine is running and it is ready to accept requests.
 
-  **Note:** You might see errors there as well. It happens when the engine gets launched before Neo4j gets accessible. Just give it a few more seconds, it is a [known](https://github.com/sirko-io/engine/issues/18) problem.
-
 ## Install without containers
 
 **IMPORTANT:** Currently, the compiled version of the engine can only be launched on Debian/Ubuntu x64. If you use another distributive, consider the use of the docker container.
@@ -152,7 +150,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 1. Download the latest release:
 
     ```
-    $ wget https://github.com/sirko-io/engine/releases/download/v0.0.2/sirko.tar.gz
+    $ wget https://github.com/sirko-io/engine/releases/download/v0.1.0/sirko.tar.gz
     ```
 
 2. Unpack the archive:
@@ -244,10 +242,6 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
         server_name sirko.yourhostname.tld;
 
         location / {
-            try_files $uri @proxy;
-        }
-
-        location @proxy {
             include proxy_params;
             proxy_redirect off;
             proxy_pass http://sirko;
@@ -278,6 +272,31 @@ To get it in your site, add the following code before `</head>`:
 **Note:** Please, don't forget to replace the placeholder with a real url.
 
 Once you've integrated the client, visit your site, open a development webtool (F12) and make sure that requests to the engine have status 200.
+
+The engine provides fallback to browsers which don't support the prerender hint. The fallback is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers) which requires the secure connection (HTTPS). So, if you want to apply it, you need to enable the fallback by adding the following line into the script tag you've added earlier:
+
+```javascript
+sirko('useFallback', true);
+```
+
+Also, you need to serve the service worker script from the root of your domain, example:
+
+```
+http://demo.sirko.io/sirko_sw.js
+```
+
+The easiest way is to proxy the request to the engine. If you use Nginx, here is an example:
+
+```
+# other directives
+
+location = /sirko_sw.js {
+  proxy_pass http://127.0.0.1:4000/assets/sirko_sw.js;
+}
+```
+
+Another way is to copy [this script](https://github.com/sirko-io/client/blob/master/dist/sirko_sw.js) and serve it via your backend.
+More details of this solution you can find [in this article](https://nesteryuk.info/2017/06/05/service-worker-as-fallback-to-the-prerender-resource-hint.html).
 
 ## Getting accuracy
 
