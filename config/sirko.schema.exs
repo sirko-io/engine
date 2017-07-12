@@ -61,9 +61,20 @@ https://github.com/bitwalker/conform.
     "rollbax.access_token": [
       commented: false,
       datatype: :binary,
-      doc: "An access token to http://rollbar.com. If you don't want to use http://rollbar.com, comment it out.",
+      doc: """
+           An access token to http://rollbar.com. This service provides a great feature to track all errors
+           happening in an application. So, you will be aware if something happens wrong without looking into
+           log files. If you don't want to use it, comment this option out.
+           """,
       hidden: false,
       to: "rollbax.access_token"
+    ],
+    "rollbax.enabled": [
+      commented: false,
+      datatype: :boolean,
+      doc: "Enables the rollbar logger",
+      hidden: true,
+      to: "rollbax.enabled"
     ],
     "sirko.web.port": [
       commented: false,
@@ -123,6 +134,12 @@ https://github.com/bitwalker/conform.
     ]
   ],
   transforms: [
+    "rollbax.enabled": fn conf ->
+      [{_, access_token}] = Conform.Conf.get(conf, "rollbax.access_token")
+
+      access_token != nil && access_token != ""
+    end,
+
     "sirko.engine.inactive_session_in": fn conf ->
       [{_, time_in_mins}] = Conform.Conf.get(conf, "sirko.engine.inactive_session_in")
 
