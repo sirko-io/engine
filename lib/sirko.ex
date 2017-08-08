@@ -8,6 +8,7 @@ defmodule Sirko do
 
     children = [
       worker(Bolt.Sips, [get_env(:bolt_sips, Bolt)]),
+      worker(Sirko.DbIndexes, [], restart: :transient),
       Sirko.Web.start_link(get_env(:sirko, :web)),
       supervisor(Sirko.Scheduler.Supervisor, [get_env(:sirko, :scheduler)])
     ]

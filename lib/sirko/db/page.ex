@@ -1,4 +1,9 @@
 defmodule Sirko.Db.Page do
+  @moduledoc """
+  A list of methods for working with a Page node which represents
+  a real page on a site.
+  """
+
   alias Sirko.Neo4j, as: Neo4j
 
   @doc """
