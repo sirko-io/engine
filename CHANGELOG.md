@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.2.0 (Not released  yet)
+
+### Changed
+
+- The engine doesn't prerender pages anymore. The previous release provided fallback to browsers which don't support the prerender hint. Since the Chrome team deprecated the prerender hint, that fallback turned to a main solution. Now, the client side of Sirko Engine prefetches a predicted page and serves it from the cache once the user visits that page. It means if you already use v0.1.0, the following code can be removed:
+
+    ```javascript
+    sirko('useFallback', true);
+    ```
+
+    Also, it is mandatory to serve a `sirko_sw.js` script from the root of your domain, example:
+
+    ```
+    https://demo.sirko.io/sirko_sw.js
+    ```
+
+    Please, get more details [here](https://github.com/sirko-io/engine#client-integration).
+
 ## v0.1.0 (15 July 2017)
 
 ### Changed
