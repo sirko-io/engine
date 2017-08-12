@@ -22,10 +22,6 @@ defmodule Sirko.Web do
   plug :match
   plug :dispatch
 
-  def init(opts) do
-    opts
-  end
-
   def start_link(opts) do
     cowboy_opts = [
       port: Keyword.get(opts, :port)
@@ -36,6 +32,10 @@ defmodule Sirko.Web do
     Logger.info fn -> "Expecting requests from #{client_url}" end
 
     Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
+  end
+
+  def init(opts) do
+    opts
   end
 
   get "/predict" do

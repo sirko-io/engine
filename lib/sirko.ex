@@ -1,16 +1,16 @@
 defmodule Sirko do
+  @moduledoc false
+
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
     children = [
-      worker(Bolt.Sips, [get_env(:bolt_sips, Bolt)]),
-      worker(Sirko.DbIndexes, [], restart: :transient),
+      {Bolt.Sips, get_env(:bolt_sips, Bolt)},
+      Sirko.DbIndexes,
       Sirko.Web.start_link(get_env(:sirko, :web)),
-      supervisor(Sirko.Scheduler.Supervisor, [get_env(:sirko, :scheduler)])
+      {Sirko.Scheduler.Supervisor, get_env(:sirko, :scheduler)}
     ]
 
     opts = [strategy: :one_for_one, name: Sirko.Supervisor]

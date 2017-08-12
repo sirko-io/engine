@@ -7,23 +7,16 @@ defmodule Sirko.DbIndexes do
   of the application.
   """
 
-  use GenServer
+  use Task, restart: :transient
 
   alias Sirko.Neo4j, as: Neo4j
 
-  def start_link do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(_) do
+    Task.start_link(__MODULE__, :add_indexes, [])
   end
 
-  def init(_) do
-    # add indexes in 2 secs after start
-    {:ok, nil, 2_000}
-  end
-
-  def handle_info(:timeout, _) do
+  def add_indexes do
     add_index_to_page()
-
-    {:stop, :normal, nil}
   end
 
   defp add_index_to_page do

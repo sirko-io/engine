@@ -25,7 +25,7 @@ defmodule Sirko.Scheduler.Supervisor do
       stale_data_worker(opts, engine_opts)
     ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
   defp inactive_sessions_worker(worker_opts, engine_opts) do
@@ -38,9 +38,11 @@ defmodule Sirko.Scheduler.Supervisor do
 
     name = Sirko.Scheduler.InactiveSessions
 
-    worker(
-      Worker,
-      [[timeout: expire_sessions_every, callback: callback, name: name]],
+    Supervisor.child_spec(
+      {
+        Worker,
+        [timeout: expire_sessions_every, callback: callback, name: name],
+      },
       id: name
     )
   end
@@ -55,9 +57,11 @@ defmodule Sirko.Scheduler.Supervisor do
 
     name = Sirko.Scheduler.Cleaner
 
-    worker(
-      Worker,
-      [[timeout: remove_stale_data_every, callback: callback, name: name]],
+    Supervisor.child_spec(
+      {
+        Worker,
+        [timeout: remove_stale_data_every, callback: callback, name: name]
+      },
       id: name
     )
   end

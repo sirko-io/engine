@@ -1,11 +1,11 @@
 sudo: required
 language: elixir
 elixir:
-  - 1.4.1
+  - 1.5.1
 otp_release:
   - 19.2
 services:
   - docker
 before_install:
-  - docker pull neo4j:3.1
+  - docker pull neo4j:3.2
   - docker run -p 7688:7687 -e NEO4J_AUTH=none -d neo4j

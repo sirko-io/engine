@@ -7,7 +7,7 @@ defmodule Sirko.Mixfile do
     [
       app: :sirko,
       version: @version,
-      elixir: "~> 1.4",
+      elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps()
@@ -36,12 +36,12 @@ defmodule Sirko.Mixfile do
   defp deps do
     [
       {:cowboy, "~> 1.1"},
-      {:plug, "~> 1.3"},
+      {:plug, "~> 1.4"},
       {:bolt_sips, github: "dnesteryuk/bolt_sips", branch: "pool_of_connections"},
       {:rollbax, "~> 0.8"},
       {:distillery, "~> 1.4", require: false},
-      {:conform, "~> 2.3", require: false},
-      {:credo, "~> 0.7.4", only: [:dev, :test], runtime: false}
+      {:conform, "~> 2.5", require: false},
+      {:credo, "~> 0.8.5", only: [:dev, :test], runtime: false}
     ]
   end
 end
