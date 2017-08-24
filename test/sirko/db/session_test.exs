@@ -5,7 +5,7 @@ defmodule Sirko.Db.SessionTest do
 
   import Support.Neo4jHelpers
 
-  alias Sirko.Db, as: Db
+  alias Sirko.{Db, Entry}
 
   setup do
     on_exit fn ->
@@ -18,22 +18,24 @@ defmodule Sirko.Db.SessionTest do
   describe "track/2" do
     setup do
       info = [
-        session_key:   "skey1",
-        referrer_path: "/popular",
-        current_path:  "/list"
+        session_key: "skey1",
+        entry: %Entry{
+          referrer_path: "/popular",
+          current_path:  "/list",
+          assets:        ["http://example.org/form.js"]
+        }
       ]
 
-      { :ok, info }
+      {:ok, info}
     end
 
     test "creates a relation between 2 pages", info do
       %{
-        session_key:   session_key,
-        referrer_path: referrer_path,
-        current_path:  current_path
+        session_key: session_key,
+        entry:       entry
       } = info
 
-      Db.Session.track(session_key, referrer_path, current_path)
+      Db.Session.track(session_key, entry)
 
       query = """
         MATCH (referral:Page)-[session:SESSION { key: {key} }]->(current:Page)
@@ -44,35 +46,34 @@ defmodule Sirko.Db.SessionTest do
         "referral" => referral_page,
         "current"  => current_page,
         "session"  => session
-      }] = execute_query(query, %{ key: session_key })
+      }] = execute_query(query, %{key: session_key})
 
-      assert referral_page.properties["path"] == referrer_path
-      assert current_page.properties["path"] == current_path
+      assert referral_page.properties["path"] == entry.referrer_path
+
+      assert current_page.properties["path"] == entry.current_path
+      assert current_page.properties["assets"] == entry.assets
+
       assert session.properties["occurred_at"] != nil
       assert session.properties["count"] == 1
     end
 
     test "does not create extra nodes when the page exists", info do
-      %{
-        referrer_path: referrer_path,
-        current_path:  current_path
-      } = info
+      %{entry: entry} = info
 
-      Db.Session.track("skey1", referrer_path, current_path)
-      Db.Session.track("skey2", referrer_path, current_path)
+      Db.Session.track("skey1", entry)
+      Db.Session.track("skey2", entry)
 
       assert count_pages() == 2
     end
 
     test "updates the count field for the relation when the relation with the given key exists", info do
       %{
-        session_key:   session_key,
-        referrer_path: referrer_path,
-        current_path:  current_path
+        session_key: session_key,
+        entry:       entry
       } = info
 
-      Db.Session.track(session_key, referrer_path, current_path)
-      Db.Session.track(session_key, referrer_path, current_path)
+      Db.Session.track(session_key, entry)
+      Db.Session.track(session_key, entry)
 
       query = """
         MATCH (:Page)-[session:SESSION { key: {key} }]->(:Page)
@@ -81,7 +82,7 @@ defmodule Sirko.Db.SessionTest do
 
       [%{
         "session"  => session
-      }] = execute_query(query, %{ key: session_key })
+      }] = execute_query(query, %{key: session_key})
 
       assert session.properties["count"] == 2
     end
@@ -98,7 +99,7 @@ defmodule Sirko.Db.SessionTest do
       { :ok, [session_keys: session_keys] }
     end
 
-    test "creates relations to the exit point", %{ session_keys: session_keys } do
+    test "creates relations to the exit point", %{session_keys: session_keys} do
       [s_key1, s_key2] = session_keys
 
       assert count_expired_sessions(s_key1) == 1
@@ -185,7 +186,7 @@ defmodule Sirko.Db.SessionTest do
       RETURN count(s) AS count
     """
 
-    [%{ "count" => count }] = execute_query(query, %{ key: session_key })
+    [%{"count" => count}] = execute_query(query, %{key: session_key})
 
     count
   end

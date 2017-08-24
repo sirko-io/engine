@@ -18,7 +18,7 @@ defmodule Sirko.WebTest do
     :ok
   end
 
-  describe "GET /predict" do
+  describe "POST /predict" do
     test "assigns a session key" do
       conn = call("/list")
 
@@ -31,28 +31,33 @@ defmodule Sirko.WebTest do
       assert get_resp_header(conn, "access-control-allow-methods") != nil
     end
 
-    test "returns the path of a next page" do
+    test "returns details of the next page" do
       conn = call("/list")
 
-      assert conn.resp_body == "/details"
+      assert conn.resp_body == Poison.encode!(
+        %{path: "/details", assets: ["http://example.org/popup.js"]}
+      )
     end
 
-    test "rejects requests with the blank cur parameter" do
+    test "rejects requests with the blank current parameter" do
       conn = call(nil)
 
       assert conn.status == 422
     end
 
-    test "rejects requests without the cur parameter" do
-      conn = conn(:get, "/predict") |> Web.call(@opts)
+    test "rejects requests without the current parameter" do
+      conn = conn(:post, "/predict") |> Web.call(@opts)
 
       assert conn.status == 422
     end
   end
 
   defp call(current_path) do
-    conn(:get, "/predict?cur=#{current_path}&ref=/")
+    body = Poison.encode!(%{current: current_path, referrer: "/"})
+
+    conn(:post, "/predict", body)
     |> put_req_header("referer", "http://app.io")
+    |> put_req_header("content-type", "application/json")
     |> Web.call(@opts)
   end
 end

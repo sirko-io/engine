@@ -12,28 +12,31 @@ defmodule Sirko.Web.Session do
 
   import Plug.Conn
 
-  alias Sirko.Session
+  alias Sirko.{Session, Entry}
 
   @cookie_name "_spio_skey"
 
-  def call(conn) do
-    {current_path, referrer_path, session_key} = extract_details(conn)
+  def call(conn, params) do
+    {entry, session_key} = extract_details(conn, params)
 
-    session_key = Session.track(current_path, referrer_path, session_key)
+    session_key = Session.track(entry, session_key)
 
     conn
     |> put_session_key(session_key)
   end
 
-  defp extract_details(conn) do
-    current_path = conn.query_params["cur"]
-    referrer_path = conn.query_params["ref"]
+  defp extract_details(conn, params) do
+    entry = %Entry{
+      current_path:  params["current"],
+      referrer_path: params["referrer"],
+      assets:        params["assets"]
+    }
 
     conn = fetch_cookies(conn)
 
     session_key = conn.req_cookies[@cookie_name]
 
-    {current_path, referrer_path, session_key}
+    {entry, session_key}
   end
 
   defp put_session_key(conn, nil), do: conn

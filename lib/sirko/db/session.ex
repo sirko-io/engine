@@ -4,21 +4,32 @@ defmodule Sirko.Db.Session do
   as relations between pages (nodes represent pages).
 
   Each user visiting a site gets an unique session key.
-  That key allows to observe users' navigation between pages.
+  That key allows observing users' navigation between pages.
   """
 
-  alias Sirko.Neo4j, as: Neo4j
+  alias Sirko.{Neo4j, Entry}
 
   @doc """
   Creates a session relation between 2 visited pages if it is
   a first transition between those pages during the current session.
   Otherwise, the relation will be updated to reflect a number of times
   the transition happened during the current session.
+
+  If pages don't exist, they get created.
   """
-  def track(session_key, referrer_path, current_path) do
+  def track(session_key, entry) do
+    %Entry{
+      referrer_path: referrer_path,
+      current_path:  current_path,
+      assets:        assets
+    } = entry
+
     query = """
       MERGE (referrer:Page { path: {referrer_path} })
+
       MERGE (current:Page { path: {current_path} })
+      SET current.assets = {assets}
+
       MERGE (referrer)-[s:SESSION { key: {key} }]->(current)
       ON CREATE SET s.occurred_at = timestamp(), s.count = 1
       ON MATCH SET s.occurred_at = timestamp(), s.count = s.count + 1
@@ -29,7 +40,8 @@ defmodule Sirko.Db.Session do
       %{
         key:           session_key,
         referrer_path: referrer_path,
-        current_path:  current_path
+        current_path:  current_path,
+        assets:        assets
       }
     )
   end

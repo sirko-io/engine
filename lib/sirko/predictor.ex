@@ -15,14 +15,15 @@ defmodule Sirko.Predictor do
   defp calc_confidence(nil), do: {nil, -1}
   defp calc_confidence(info) do
     %{
-      "path"  => path,
-      "count" => count,
-      "total" => total
+      "path"   => path,
+      "assets" => assets,
+      "count"  => count,
+      "total"  => total
     } = info
 
-    {path, count / total}
+    {%{path: path, assets: assets}, count / total}
   end
 
-  defp check_confidence({path, confidence}, threshold) when confidence >= threshold, do: path
+  defp check_confidence({page, confidence}, threshold) when confidence >= threshold, do: page
   defp check_confidence(_, _), do: nil
 end

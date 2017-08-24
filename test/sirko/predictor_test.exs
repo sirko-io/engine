@@ -18,7 +18,7 @@ defmodule Sirko.PredictorTest do
 
   describe "predict/2" do
     test "predicts the details page when the confidence threshold is 20%" do
-      assert predict("/list", 0.2) == "/details"
+      assert predict("/list", 0.2) == %{path: "/details", assets: ["http://example.org/popup.js"]}
     end
 
     test "predicts nothing when the confidence threshold is 50%" do

@@ -4,7 +4,7 @@ defmodule Sirko.Web.PredictorTest do
 
   import Support.Neo4jHelpers
 
-  import Sirko.Web.Predictor, only: [ call: 1 ]
+  import Sirko.Web.Predictor, only: [call: 2]
 
   setup do
     load_fixture("transitions")
@@ -16,19 +16,22 @@ defmodule Sirko.Web.PredictorTest do
     :ok
   end
 
-  test "assigns the path of a next page" do
-    conn = conn(:get, "/predict?cur=/list")
-    |> fetch_query_params
-    |> call
+  test "assigns details of the next page" do
+    conn = conn(:post, "/")
+    |> call(%{"current" => "/list"})
 
-    assert conn.resp_body == "/details"
+    expected_body = Poison.encode!(%{
+      path:   "/details",
+      assets: ["http://example.org/popup.js"]
+    })
+
+    assert conn.resp_body == expected_body
   end
 
-  test "assigns an empty string when the current page is a new one" do
-    conn = conn(:get, "/predict?cur=/reports")
-    |> fetch_query_params
-    |> call
+  test "assigns an empty json string when the current page is a new one" do
+    conn = conn(:post, "/")
+    |> call(%{"current" => "/reports"})
 
-    assert conn.resp_body == ""
+    assert conn.resp_body == "{}"
   end
 end

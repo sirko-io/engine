@@ -1,7 +1,7 @@
 MERGE (start:Page { path: "/" })
 MERGE (list:Page { path: "/list" })
 MERGE (popular:Page { path: "/popular" })
-MERGE (details:Page { path: "/details" })
+MERGE (details:Page { path: "/details", assets: ["http://example.org/popup.js"] })
 MERGE (about:Page { path: "/about" })
 MERGE (lonely:Page { path: "/lonely" })
 MERGE (single:Page { path: "/single" })

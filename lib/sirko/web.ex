@@ -18,6 +18,9 @@ defmodule Sirko.Web do
 
   plug Sirko.Plugs.Access
   plug Sirko.Plugs.Cors
+  plug Plug.Parsers, parsers:      [:json],
+                     pass:         ["application/json"],
+                     json_decoder: Poison
 
   plug :match
   plug :dispatch
@@ -34,22 +37,25 @@ defmodule Sirko.Web do
     Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
   end
 
-  def init(opts) do
-    opts
+  def init(opts), do: opts
+
+  options "/predict" do
+    conn
+    |> send_resp(200, "")
   end
 
-  get "/predict" do
-    conn = fetch_query_params(conn)
+  post "/predict" do
+    params = conn.params
 
-    case conn.query_params["cur"] do
-      "" ->
+    case params["current"] do
+      nil ->
         conn
         |> send_resp(422, "")
         |> halt
       _ ->
         conn
-        |> Session.call
-        |> Predictor.call
+        |> Session.call(params)
+        |> Predictor.call(params)
         |> halt
     end
   end

@@ -7,7 +7,7 @@ defmodule Sirko.Session do
   of visited pages by a particular user.
   """
 
-  alias Sirko.Db, as: Db
+  alias Sirko.{Db, Entry}
 
   @default_key_length 32 # bytes
 
@@ -18,15 +18,15 @@ defmodule Sirko.Session do
   Do nothing if the referrer is nil. We cannot track a transition,
   because it hasn't happened yet.
   """
-  def track(_, nil, _), do: nil
+  def track(%Entry{referrer_path: nil}, _), do: nil
 
   @doc """
   Creates a unique session key and tracks the transition.
   """
-  def track(current_path, referrer_path, nil) do
+  def track(entry, nil) do
     session_key = generate_key()
 
-    Db.Session.track(session_key, referrer_path, current_path)
+    Db.Session.track(session_key, entry)
     session_key
   end
 
@@ -34,12 +34,12 @@ defmodule Sirko.Session do
   Adds the given page to the chain of visited pages by a particular user.
   If the given session key belongs to an expired session, a new session gets started.
   """
-  def track(current_path, referrer_path, session_key) do
+  def track(entry, session_key) do
     if Db.Session.active?(session_key) do
-      Db.Session.track(session_key, referrer_path, current_path)
+      Db.Session.track(session_key, entry)
       session_key
     else
-      track(current_path, referrer_path, nil)
+      track(entry, nil)
     end
   end
 

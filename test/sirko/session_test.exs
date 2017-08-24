@@ -6,6 +6,8 @@ defmodule Sirko.SessionTest do
   import Support.Neo4jHelpers
   import Sirko.Session
 
+  alias Sirko.Entry
+
   setup do
     on_exit fn ->
       cleanup_db()
@@ -14,19 +16,25 @@ defmodule Sirko.SessionTest do
     :ok
   end
 
-  describe "track/3 the reffer is not given" do
+  describe "track/3 the referrer is not given" do
     test "returns nil" do
-       assert track("/popular", nil, nil) == nil
+       assert track(%Entry{current_path: "/popular"}, nil) == nil
     end
   end
 
   describe "track/3 the session key is not given" do
-    test "starts a new session with a unique key" do
-      assert track("/popular", "/", nil) != track("/popular", "/", nil)
+    setup do
+      entry = %Entry{current_path: "/popular", referrer_path: "/"}
+
+      {:ok, [entry: entry]}
     end
 
-    test "adds a new visited page to a newly started session" do
-      session_key = track("/popular", "/", nil)
+    test "starts a new session with a unique key", %{entry: entry} do
+      assert track(entry, nil) != track(entry, nil)
+    end
+
+    test "adds a new visited page to a newly started session", %{entry: entry} do
+      session_key = track(entry, nil)
 
       assert count_sessions(session_key) == 1
     end
@@ -35,34 +43,43 @@ defmodule Sirko.SessionTest do
   describe "track/3 the session key is given" do
     setup do
       session_key = "skey20"
+      entry = %Entry{current_path: "/details", referrer_path: "/list"}
 
       load_fixture("diverse_sessions")
 
-      {:ok, [session_key: session_key]}
+      {:ok, [session_key: session_key, entry: entry]}
     end
 
-    test "adds a new visited page to the existing session", %{session_key: session_key} do
-      track("/details", "/list", session_key)
+    test "adds a new visited page to the existing session", info do
+      %{session_key: session_key, entry: entry} = info
+
+      track(entry, session_key)
 
       assert count_sessions(session_key) == 3
     end
 
-    test "returns the given session key", %{session_key: session_key} do
-      assert track("/details", "/list", session_key) == session_key
+    test "returns the given session key", info do
+      %{session_key: session_key, entry: entry} = info
+
+      assert track(entry, session_key) == session_key
     end
 
-    test "does not create a new session relation when the session key is invalid" do
+    test "does not create a new session relation when the session key is invalid", info do
+      %{entry: entry} = info
+
       invalid_session_key = "fake-skey"
 
-      track("/details", "/list", invalid_session_key)
+      track(entry, invalid_session_key)
 
       assert count_sessions(invalid_session_key) == 0
     end
 
-    test "starts a new session when the session key is expired" do
+    test "starts a new session when the session key is expired", info do
+      %{entry: entry} = info
+
       expired_session_key = "skey10"
 
-      session_key = track("/details", "/list", expired_session_key)
+      session_key = track(entry, expired_session_key)
 
       assert session_key != nil
       assert session_key != expired_session_key

@@ -104,9 +104,10 @@ defmodule Sirko.Db.TransitionTest do
 
     test "returns a map containing info about the next page to be visited" do
       assert Db.Transition.predict("/list") == %{
-        "total" => 14,
-        "count" => 6,
-        "path" => "/details"
+        "total"  => 14,
+        "count"  => 6,
+        "path"   => "/details",
+        "assets" => ["http://example.org/popup.js"]
       }
     end
 
@@ -116,9 +117,10 @@ defmodule Sirko.Db.TransitionTest do
 
     test "takes the path with the most fresh transitions when there are 2 paths with identical counts" do
       assert Db.Transition.predict("/about") == %{
-        "total" => 4,
-        "count" => 2,
-        "path" => "/popular"
+        "total"  => 4,
+        "count"  => 2,
+        "path"   => "/popular",
+        "assets" => nil
       }
 
     end

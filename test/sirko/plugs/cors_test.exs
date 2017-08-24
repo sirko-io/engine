@@ -8,7 +8,7 @@ defmodule Sirko.Plugs.CorsTest do
     conn = conn(:get, "/") |> call
 
     assert get_resp_header(conn, "access-control-allow-origin") == ["http://app.io"]
-    assert get_resp_header(conn, "access-control-allow-methods") == ["get"]
+    assert get_resp_header(conn, "access-control-allow-methods") == ["post"]
     assert get_resp_header(conn, "access-control-allow-credentials") == ["true"]
   end
 end
