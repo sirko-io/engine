@@ -14,22 +14,25 @@ defmodule Sirko.Web.SessionTest do
     :ok
   end
 
-  test "does not assign a session key when the transition hasn't happened yet" do
-    conn = conn(:post, "/")
+  test "returns nil when the transition hasn't happened yet" do
+    res = conn(:post, "/")
     |> call(%{"current" => "/list"})
 
-    assert conn.resp_cookies["_spio_skey"] == nil
+    assert res == nil
   end
 
-  test "assigns a session key when the transition has happened" do
-    conn = conn(:post, "/")
+  test "returns a tuple with a session key when the transition has happened" do
+    res = conn(:post, "/")
     |> call(%{
       "current"  => "/list",
       "referrer" => "/home",
       "assets"   => ["http://example.org"]
     })
 
-    assert conn.resp_cookies["_spio_skey"][:value] != nil
-    assert conn.resp_cookies["_spio_skey"][:max_age] == 3600
+    {name, session_key, opts} = res
+
+    assert name == "_spio_skey"
+    assert session_key != nil
+    assert opts[:max_age] == 3600
   end
 end

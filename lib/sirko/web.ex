@@ -53,9 +53,11 @@ defmodule Sirko.Web do
         |> send_resp(422, "")
         |> halt
       _ ->
+        tracking = track(conn, params)
+        predicting = predict(conn, params)
+
         conn
-        |> Session.call(params)
-        |> Predictor.call(params)
+        |> build_resp(tracking, predicting)
         |> halt
     end
   end
@@ -78,5 +80,36 @@ defmodule Sirko.Web do
     conn
     |> send_resp(404, "")
     |> halt
+  end
+
+  defp track(conn, params) do
+    Task.async(Session, :call, [conn, params])
+  end
+
+  defp predict(conn, params) do
+    Task.async(Predictor, :call, [conn, params])
+  end
+
+  defp build_resp(conn, tracking, predicting) do
+    timeout = 30_000
+
+    conn
+    |> put_session_key(Task.await(tracking, timeout))
+    |> put_resp_body(Task.await(predicting, timeout))
+  end
+
+  defp put_resp_body(conn, body) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, body)
+  end
+
+  defp put_session_key(conn, nil), do: conn
+
+  defp put_session_key(conn, cookie) do
+    {name, val, opts} = cookie
+
+    conn
+    |> put_resp_cookie(name, val, opts)
   end
 end

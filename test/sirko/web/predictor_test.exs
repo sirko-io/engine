@@ -16,8 +16,8 @@ defmodule Sirko.Web.PredictorTest do
     :ok
   end
 
-  test "assigns details of the next page" do
-    conn = conn(:post, "/")
+  test "returns details of the next page" do
+    res = conn(:post, "/")
     |> call(%{"current" => "/list"})
 
     expected_body = Poison.encode!(%{
@@ -25,13 +25,13 @@ defmodule Sirko.Web.PredictorTest do
       assets: ["http://example.org/popup.js"]
     })
 
-    assert conn.resp_body == expected_body
+    assert res == expected_body
   end
 
-  test "assigns an empty json string when the current page is a new one" do
-    conn = conn(:post, "/")
+  test "returns an empty json string when the current page is a new one" do
+    res = conn(:post, "/")
     |> call(%{"current" => "/reports"})
 
-    assert conn.resp_body == "{}"
+    assert res == "{}"
   end
 end

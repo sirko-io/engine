@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.0 (Not released  yet)
+## v0.2.0 (Not released yet)
 
 ### Changed
 
@@ -17,6 +17,8 @@
     ```
 
     Please, get more details [here](https://github.com/sirko-io/engine#client-integration).
+
+- Performance improvements
 
 ### Added
 

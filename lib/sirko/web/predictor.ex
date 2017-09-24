@@ -6,20 +6,16 @@ defmodule Sirko.Web.Predictor do
 
   require Logger
 
-  import Plug.Conn
-
   alias Sirko.Predictor
 
-  def call(conn, params) do
+  def call(_conn, params) do
     current_path = params["current"]
 
     next_page = Predictor.predict(current_path, confidence_threshold())
 
     log_prediction(current_path, next_page)
 
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, build_body(next_page))
+    build_body(next_page)
   end
 
   defp log_prediction(current_path, nil) do

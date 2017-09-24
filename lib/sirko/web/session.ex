@@ -2,12 +2,19 @@ defmodule Sirko.Web.Session do
   @moduledoc """
   Maintains a user session.
 
-  If it is a new user, a unique session key gets assigned through cookies
-  to the browser in order to track visited pages by the user.
+  When a user has visited only 1 page, it does nothing.
+  There is nothing to track yet.
 
-  If it is a returned user, the current page will be added to the chain of
-  visited pages by the user. The expiry date of the session key gets prolonged.
-  The idea is to expire the cookie in the browser and the session in the DB at the same time.
+  When a user has visited only 2 pages, it:
+    - assigns a unique session key through cookies to track
+      further visits of the user
+    - adds a transition to the newly started session
+
+  When a user has a session key, it:
+    - adds a transition to the user's session
+    - prolongs the expiry of the session key. The idea is
+      to expire the cookie in the browser and the session
+      in the DB at the same time.
   """
 
   import Plug.Conn
@@ -16,13 +23,19 @@ defmodule Sirko.Web.Session do
 
   @cookie_name "_spio_skey"
 
+  @doc """
+  Returns a tuple which can be used to add the cookie to the response.
+  So, the top level module doesn't know anything about this cookie, it only knows
+  that it must be added.
+
+  Returns nil, when a transition hasn't happened yet.
+  """
   def call(conn, params) do
     {entry, session_key} = extract_details(conn, params)
 
-    session_key = Session.track(entry, session_key)
-
-    conn
-    |> put_session_key(session_key)
+    entry
+    |> Session.track(session_key)
+    |> build_cookie
   end
 
   defp extract_details(conn, params) do
@@ -39,11 +52,10 @@ defmodule Sirko.Web.Session do
     {entry, session_key}
   end
 
-  defp put_session_key(conn, nil), do: conn
+  defp build_cookie(nil), do: nil
 
-  defp put_session_key(conn, session_key) do
-    conn
-    |> put_resp_cookie(@cookie_name, session_key, [max_age: cookie_max_age()])
+  defp build_cookie(session_key) do
+    {@cookie_name, session_key, [max_age: cookie_max_age()]}
   end
 
   defp cookie_max_age do
