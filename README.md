@@ -2,16 +2,14 @@
 
 [![Build Status](https://travis-ci.org/sirko-io/engine.svg?branch=master)](https://travis-ci.org/sirko-io/engine)
 
-It is a simple engine to track users' navigation on a site and predict the next page which most likely will be visited by the current user.
-As soon as the engine predicts the next page, a client part of the solution adds a hint for the browser in order to prerender the predicted page. In some cases, the load of the prerendered page is close to be instant, hence, the end user gets faster response and better experience.
+It is a simple engine to track users' navigation on a site and predict a next page which most likely will be visited by the current user.
+As soon as the engine predicts the next page, a client part of the solution prefetches the page and assets (JavaScript and CSS files) for it, hence, the user gets faster response and better experience once they navigate to the predicted page.
 
-- A full description of the prerendering idea can be found in [this article](http://nesteryuk.info/2016/09/27/prerendering-pages-in-browsers.html).
-- How it works in Chrome you can read [here](https://www.chromium.org/developers/design-documents/prerender).
-
-Currently, this solution is only recommended to public pages which meet the following criteria:
+Currently, this solution is only recommended for public pages which meet the following criteria:
 
 - **pages aren't personalized**. There are bugs related to a transition from the anonymous state to the authorized one.
-- **pages aren't too diverse**. For instance, if you have an online store with a lot of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
+- **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
+- **pages are served over a secure connection (HTTPS)**. The client part is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers).
 
 [Try demo](http://demo.sirko.io)
 
@@ -44,7 +42,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.1.0/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.2.0/config/sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -82,7 +80,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.1.0/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.2.0/config/sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -150,7 +148,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 1. Download the latest release:
 
     ```
-    $ wget https://github.com/sirko-io/engine/releases/download/v0.1.0/sirko.tar.gz
+    $ wget https://github.com/sirko-io/engine/releases/download/v0.2.0/sirko.tar.gz
     ```
 
 2. Unpack the archive:
@@ -271,15 +269,7 @@ To get it in your site, add the following code before `</head>`:
 
 **Note:** Please, don't forget to replace the placeholder with a real url.
 
-Once you've integrated the client, visit your site, open a development webtool (F12) and make sure that requests to the engine have status 200.
-
-The engine provides fallback to browsers which don't support the prerender hint. The fallback is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers) which requires the secure connection (HTTPS). So, if you want to apply it, you need to enable the fallback by adding the following line into the script tag you've added earlier:
-
-```javascript
-sirko('useFallback', true);
-```
-
-Also, you need to serve the service worker script from the root of your domain, example:
+The next step is to serve the service worker script from the root of your domain, example:
 
 ```
 http://demo.sirko.io/sirko_sw.js
@@ -296,7 +286,8 @@ location = /sirko_sw.js {
 ```
 
 Another way is to copy [this script](https://github.com/sirko-io/client/blob/master/dist/sirko_sw.js) and serve it via your backend.
-More details of this solution you can find [in this article](https://nesteryuk.info/2017/06/05/service-worker-as-fallback-to-the-prerender-resource-hint.html).
+
+Once you've integrated the client, visit your site, open a development webtool (F12) and make sure that requests to the engine have status 200. If you use Chrome, click on the _Application_ tab, then click on the _Service workers_ item in the left sidebar. There you should see all registered service workers on your page. You need to find a `sirko_sw.js` service worker, it should have the `activated and running` state and no errors.
 
 ## Getting accuracy
 

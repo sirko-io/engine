@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.0 (Not released yet)
+## v0.2.0 (1 October 2017)
 
 ### Changed
 
@@ -22,7 +22,7 @@
 
 ### Added
 
-- When a page gets prefetched via a service worker, assets (images, JavaScript, CSS files) aren't fetched until the page gets shown. To speed up page loading, the engine got enhanced to store urls to assets (only JavaScript and CSS files) of a page. So, when the engine predicts a next page, the client prefetches the predicted page and assets of the page. Thus, when a user navigates to that page, the page and assets of that page get served from the browser's cache.
+- When a page gets prefetched via a service worker, assets (images, JavaScript, CSS files) aren't fetched until the page gets shown. To speed up page loading, the engine got enhanced to store urls to assets (only JavaScript and CSS files) of a page. So, when the engine predicts a next page, the client prefetches the predicted page and assets of the page. Thus, when the user navigates to that page, the page and assets get served from the browser's cache.
 
 ## v0.1.0 (15 July 2017)
 
