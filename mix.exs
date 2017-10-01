@@ -20,7 +20,7 @@ defmodule Sirko.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Sirko, []}
+      mod: {Sirko, [version: @version]}
     ]
   end
 

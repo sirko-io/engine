@@ -1,11 +1,19 @@
 defmodule Sirko do
-  @moduledoc false
+  @moduledoc """
+  Implements callbacks required by the Application behavior (https://hexdocs.pm/elixir/Application.html)
+  to start top-level processes.
+  """
 
   use Application
 
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
-  def start(_type, _args) do
+  require Logger
+
+  @issues_url "https://github.com/sirko-io/engine/issues"
+
+  @doc "Callback for Application.start/2"
+  def start(_type, args) do
+    print_help_info(Keyword.get(args, :version))
+
     children = [
       {Bolt.Sips, get_env(:bolt_sips, Bolt)},
       Sirko.DbIndexes,
@@ -20,5 +28,12 @@ defmodule Sirko do
 
   defp get_env(ns, key) do
     Application.get_env(ns, key)
+  end
+
+  defp print_help_info(version) do
+    Logger.info fn ->
+      "The current version is #{version}. " <>
+      "If you have questions/issues, please, report them #{@issues_url}"
+    end
   end
 end
