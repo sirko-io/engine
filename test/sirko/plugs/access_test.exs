@@ -12,6 +12,13 @@ defmodule Sirko.Plugs.AccessTest do
     assert conn.status == nil
   end
 
+  test "passes when it is the OPTIONS request" do
+    conn = conn(:options, "/")
+    |> call
+
+    assert conn.status == nil
+  end
+
   test "rejects when the request comes from a unknown client" do
     conn = conn(:get, "/")
     |> put_req_header("referer", "http://example.org")

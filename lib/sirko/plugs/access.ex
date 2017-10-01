@@ -8,7 +8,15 @@ defmodule Sirko.Plugs.Access do
 
   def init(opts), do: opts
 
-  def call(conn, _ \\ []) do
+  def call(conn, _ \\ [])
+
+  @doc """
+  Returns the conn structure without verifying info in case of the OPTIONS request.
+  Some browsers (Firefox) don't send the referer header with this kind of the request.
+  """
+  def call(%{method: "OPTIONS"} = conn, _), do: conn
+
+  def call(conn, _) do
     # TODO: find a way to cache it
     {:ok, reg} = Regex.compile("^#{client_url()}")
 
