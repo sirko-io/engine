@@ -17,7 +17,7 @@ defmodule Sirko do
     children = [
       {Bolt.Sips, get_env(:bolt_sips, Bolt)},
       Sirko.DbIndexes,
-      Sirko.Web.start_link(get_env(:sirko, :web)),
+      {Sirko.Web, get_env(:sirko, :web)},
       {Sirko.Scheduler.Supervisor, get_env(:sirko, :scheduler)}
     ]
 

@@ -25,7 +25,7 @@ defmodule Sirko.Web do
   plug :match
   plug :dispatch
 
-  def start_link(opts) do
+  def child_spec(opts) do
     cowboy_opts = [
       port: Keyword.get(opts, :port)
     ]
