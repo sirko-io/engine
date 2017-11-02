@@ -37,7 +37,7 @@ defmodule Sirko.Mixfile do
     [
       {:cowboy, "~> 1.1"},
       {:plug, "~> 1.4"},
-      {:bolt_sips, github: "dnesteryuk/bolt_sips", branch: "pool_of_connections"},
+      {:bolt_sips, github: "florinpatrascu/bolt_sips"},
       {:rollbax, "~> 0.8"},
       {:poison, "~> 3.1"},
       {:distillery, "~> 1.5", require: false},

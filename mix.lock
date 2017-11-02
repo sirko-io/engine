@@ -1,4 +1,4 @@
-%{"bolt_sips": {:git, "https://github.com/dnesteryuk/bolt_sips.git", "49ba6e26b868c86930fad12c440220ab4816bdbb", [branch: "pool_of_connections"]},
+%{"bolt_sips": {:git, "https://github.com/florinpatrascu/bolt_sips.git", "4a4442b63f61fce6614ba90a4c603f9bbc8c8ec3", []},
   "boltex": {:hex, :boltex, "0.3.0", "9d08a310cb0e3c97938ead88bbfc3f3be8fad9a47036b8117ce76ac32a4045d2", [:hex], [], "hexpm"},
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm"},
   "certifi": {:hex, :certifi, "2.0.0", "a0c0e475107135f76b8c1d5bc7efb33cd3815cb3cf3dea7aefdd174dabead064", [:rebar3], [], "hexpm"},
