@@ -7,7 +7,6 @@ As soon as the engine predicts the next page, a client part of the solution pref
 
 Currently, this solution is only recommended for public pages which meet the following criteria:
 
-- **pages aren't personalized**. There are bugs related to a transition from the anonymous state to the authorized one.
 - **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
 - **pages are served over a secure connection (HTTPS)**. The client part is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers).
 
@@ -16,6 +15,10 @@ Currently, this solution is only recommended for public pages which meet the fol
 ### Users on mobile devices
 
 In order to save a battery of users on mobile devices the engine ignores such users.
+
+### Browser support
+
+The solution works in browsers which [support service workers](https://caniuse.com/#search=serviceworker).
 
 ## Table of contents
 
@@ -35,14 +38,14 @@ In order to save a battery of users on mobile devices the engine ignores such us
 
 There are at least 3 ways to install the engine. The easiest one is to install it with [Docker](#install-with-docker) or [Docker Compose](#install-with-docker-compose) (it installs Neo4j along with the engine). But, if you have reasons not to use Docker, follow [this instruction](#install-without-containers).
 
-**IMPORTANT:** The instructions (besides the one about Docker Compose) suppose that Neo4j 3.0 or greater is already [installed](http://neo4j.com/docs/operations-manual/3.1/installation/) on your server or you got an account from one of [Neo4j cloud hosting providers](https://neo4j.com/developer/guide-cloud-deployment/#_neo4j_cloud_hosting_providers). **If you decide to host a Neo4j instance on your server, please, make sure you have at least 2 Gb of free RAM.**
+**IMPORTANT:** The instructions (besides the one about Docker Compose) suppose that Neo4j 3.0 or greater is already [installed](http://neo4j.com/docs/operations-manual/3.1/installation/) on your server or you got an account from one of [Neo4j cloud hosting providers](https://neo4j.com/developer/neo4j-cloud-hosting-providers/). **If you decide to host a Neo4j instance on your server, please, make sure you have at least 2 Gb of free RAM.**
 
 ## Install with [Docker](http://docker.com)
 
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.2.0/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.3.0/config/sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -80,7 +83,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.2.0/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.3.0/config/sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -148,7 +151,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 1. Download the latest release:
 
     ```
-    $ wget https://github.com/sirko-io/engine/releases/download/v0.2.0/sirko.tar.gz
+    $ wget https://github.com/sirko-io/engine/releases/download/v0.3.0/sirko.tar.gz
     ```
 
 2. Unpack the archive:
@@ -260,11 +263,11 @@ Once you've got the engine installed, you need to integrate the client part of t
 To get it in your site, add the following code before `</head>`:
 
 ```html
-<script async src="http://__URL_TO_ENGINE_HERE__/assets/client.js"></script>
 <script>
   (function(w,m){w[m]=function(){w[m].q.push(arguments);};w[m].q=[];})(window,'sirko');
   sirko('engineUrl', '__URL_TO_ENGINE_HERE__');
 </script>
+<script async src="__URL_TO_ENGINE_HERE__/assets/client.js"></script>
 ```
 
 **Note:** Please, don't forget to replace the placeholder with a real url.
@@ -298,6 +301,7 @@ If you want to know accuracy of predictions made for your site, you can integrat
   window.onload = function() {
     sirko('predicted', function(currentPrediction, isPrevCorrect) {
       if (isPrevCorrect !== undefined) {
+        console.info('The previous prediction was', isPrevCorrect ? 'correct' : 'incorrect');
         // call your tracking service here
       }
     });

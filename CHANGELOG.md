@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.0 (1 January 2018)
+
+### Fixed
+
+- Prefetching a wrong page for an authorized user because of missing cookies ([sirko-io/client#26](https://github.com/sirko-io/client/issues/26))
+- A number of issues related to HTTP requests modifying data ([#10](https://github.com/sirko-io/engine/issues/10), [#15](https://github.com/sirko-io/engine/issues/15), [sirko-io/client#1](https://github.com/sirko-io/client/issues/1)). Now, if there is a request modifying data in a user's transition, the transition won't be tracked, hence, a stale page won't be prefetched.
+
 ## v0.2.0 (1 October 2017)
 
 ### Changed
