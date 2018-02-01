@@ -12,16 +12,16 @@ defmodule Sirko.Neo4j do
   Raises an error if the query fails.
   """
   def query(query, params \\ %{}) do
-    {duration, query_res} = :timer.tc(
-      Bolt, :query, [Bolt.pool_name(), query, params]
-    )
+    {duration, query_res} = :timer.tc(Bolt, :query, [Bolt.pool_name(), query, params])
 
-    Logger.info fn ->
-      "Neo4j query (#{time_in_msec duration}ms):\n#{query} Params: #{inspect params}"
-    end
+    Logger.info(fn ->
+      "Neo4j query (#{time_in_msec(duration)}ms):\n#{query} Params: #{inspect(params)}"
+    end)
 
     case query_res do
-      {:ok, res} -> res
+      {:ok, res} ->
+        res
+
       {:error, [%{"code" => code, "message" => message}]} ->
         Logger.error("#{code} #{message}\nQuery:\n#{query}")
 

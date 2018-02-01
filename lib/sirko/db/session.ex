@@ -20,8 +20,8 @@ defmodule Sirko.Db.Session do
   def track(session_key, entry) do
     %Entry{
       referrer_path: referrer_path,
-      current_path:  current_path,
-      assets:        assets
+      current_path: current_path,
+      assets: assets
     } = entry
 
     query = """
@@ -35,15 +35,12 @@ defmodule Sirko.Db.Session do
       ON MATCH SET s.occurred_at = timestamp(), s.count = s.count + 1
     """
 
-    Neo4j.query(
-      query,
-      %{
-        key:           session_key,
-        referrer_path: referrer_path,
-        current_path:  current_path,
-        assets:        assets
-      }
-    )
+    Neo4j.query(query, %{
+      key: session_key,
+      referrer_path: referrer_path,
+      current_path: current_path,
+      assets: assets
+    })
   end
 
   @doc """
@@ -89,6 +86,7 @@ defmodule Sirko.Db.Session do
     case Neo4j.query(query, %{key: session_key}) do
       [%{"active" => active}] ->
         active
+
       _ ->
         false
     end

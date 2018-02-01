@@ -2,7 +2,7 @@ defmodule Sirko.Plugs.CorsTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
-  import Sirko.Plugs.Cors, only: [ call: 1 ]
+  import Sirko.Plugs.Cors, only: [call: 1]
 
   test "sets CORS headers" do
     conn = conn(:get, "/") |> call

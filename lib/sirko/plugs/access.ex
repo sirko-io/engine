@@ -23,6 +23,7 @@ defmodule Sirko.Plugs.Access do
     case get_req_header(conn, "referer") do
       [referer] ->
         respond(conn, Regex.match?(reg, referer))
+
       _ ->
         reject(conn)
     end

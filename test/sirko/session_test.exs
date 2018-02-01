@@ -9,16 +9,16 @@ defmodule Sirko.SessionTest do
   alias Sirko.Entry
 
   setup do
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end
 
   describe "track/3 the referrer is not given" do
     test "returns nil" do
-       assert track(%Entry{current_path: "/popular"}, nil) == nil
+      assert track(%Entry{current_path: "/popular"}, nil) == nil
     end
   end
 
@@ -149,13 +149,13 @@ defmodule Sirko.SessionTest do
   end
 
   defp items_count(query) do
-    [%{ "items_count" => count }] = execute_query(query)
+    [%{"items_count" => count}] = execute_query(query)
 
     count
   end
 
   defp items_count(query, session_key) do
-    [%{ "items_count" => count }] = execute_query(query, %{ key: session_key })
+    [%{"items_count" => count}] = execute_query(query, %{key: session_key})
 
     count
   end

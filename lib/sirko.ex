@@ -31,9 +31,9 @@ defmodule Sirko do
   end
 
   defp print_help_info(version) do
-    Logger.info fn ->
+    Logger.info(fn ->
       "The current version is #{version}. " <>
-      "If you have questions/issues, please, report them #{@issues_url}"
-    end
+        "If you have questions/issues, please, report them #{@issues_url}"
+    end)
   end
 end

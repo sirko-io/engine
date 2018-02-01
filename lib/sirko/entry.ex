@@ -3,7 +3,7 @@ defmodule Sirko.Entry do
   Describes data which gets sent by the client.
   """
 
-  defstruct current_path:  nil,
+  defstruct current_path: nil,
             referrer_path: nil,
-            assets:        []
+            assets: []
 end

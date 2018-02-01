@@ -7,9 +7,9 @@ defmodule Sirko.Mixfile do
     [
       app: :sirko,
       version: @version,
-      elixir: "~> 1.5",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      elixir: "~> 1.6",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -42,7 +42,7 @@ defmodule Sirko.Mixfile do
       {:poison, "~> 3.1"},
       {:distillery, "~> 1.5", require: false},
       {:conform, "~> 2.5", require: false},
-      {:credo, "~> 0.8.5", only: [:dev, :test], runtime: false}
+      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
     ]
   end
 end

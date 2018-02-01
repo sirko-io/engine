@@ -9,7 +9,8 @@ defmodule Sirko.Scheduler.Worker do
 
   use GenServer
 
-  @default_timeout 60 * 60 * 1000 # 1 hour
+  # 1 hour
+  @default_timeout 60 * 60 * 1000
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: Keyword.get(opts, :name))

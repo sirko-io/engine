@@ -8,9 +8,9 @@ defmodule Sirko.Db.SessionTest do
   alias Sirko.{Db, Entry}
 
   setup do
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end
@@ -21,8 +21,8 @@ defmodule Sirko.Db.SessionTest do
         session_key: "skey1",
         entry: %Entry{
           referrer_path: "/popular",
-          current_path:  "/list",
-          assets:        ["http://example.org/form.js"]
+          current_path: "/list",
+          assets: ["http://example.org/form.js"]
         }
       ]
 
@@ -32,7 +32,7 @@ defmodule Sirko.Db.SessionTest do
     test "creates a relation between 2 pages", info do
       %{
         session_key: session_key,
-        entry:       entry
+        entry: entry
       } = info
 
       Db.Session.track(session_key, entry)
@@ -42,11 +42,13 @@ defmodule Sirko.Db.SessionTest do
         RETURN referral, current, session
       """
 
-      [%{
-        "referral" => referral_page,
-        "current"  => current_page,
-        "session"  => session
-      }] = execute_query(query, %{key: session_key})
+      [
+        %{
+          "referral" => referral_page,
+          "current" => current_page,
+          "session" => session
+        }
+      ] = execute_query(query, %{key: session_key})
 
       assert referral_page.properties["path"] == entry.referrer_path
 
@@ -66,10 +68,11 @@ defmodule Sirko.Db.SessionTest do
       assert count_pages() == 2
     end
 
-    test "updates the count field for the relation when the relation with the given key exists", info do
+    test "updates the count field for the relation when the relation with the given key exists",
+         info do
       %{
         session_key: session_key,
-        entry:       entry
+        entry: entry
       } = info
 
       Db.Session.track(session_key, entry)
@@ -80,9 +83,11 @@ defmodule Sirko.Db.SessionTest do
         RETURN session
       """
 
-      [%{
-        "session"  => session
-      }] = execute_query(query, %{key: session_key})
+      [
+        %{
+          "session" => session
+        }
+      ] = execute_query(query, %{key: session_key})
 
       assert session.properties["count"] == 2
     end
@@ -96,7 +101,7 @@ defmodule Sirko.Db.SessionTest do
 
       Db.Session.expire(session_keys)
 
-      { :ok, [session_keys: session_keys] }
+      {:ok, [session_keys: session_keys]}
     end
 
     test "creates relations to the exit point", %{session_keys: session_keys} do
@@ -141,7 +146,7 @@ defmodule Sirko.Db.SessionTest do
     test "returns keys of sessions which are inactive for 1 hr" do
       session_keys = Db.Session.all_inactive(3600 * 1000)
 
-      assert session_keys |> Enum.sort == ["skey20", "skey21", "skey22", "skey23"]
+      assert session_keys |> Enum.sort() == ["skey20", "skey21", "skey22", "skey23"]
     end
   end
 
@@ -155,7 +160,7 @@ defmodule Sirko.Db.SessionTest do
     test "returns keys of sessions which expired 7 days ago" do
       session_keys = Db.Session.all_stale(3600 * 1000 * 24 * 7)
 
-      assert session_keys |> Enum.sort == ["skey1", "skey2"]
+      assert session_keys |> Enum.sort() == ["skey1", "skey2"]
     end
   end
 

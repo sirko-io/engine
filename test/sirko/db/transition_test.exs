@@ -6,9 +6,9 @@ defmodule Sirko.Db.TransitionTest do
   alias Sirko.Db, as: Db
 
   setup do
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end
@@ -22,7 +22,7 @@ defmodule Sirko.Db.TransitionTest do
       {:ok, [session_keys: session_keys]}
     end
 
-    test "records transitions between pages", %{ session_keys: session_keys } do
+    test "records transitions between pages", %{session_keys: session_keys} do
       Db.Transition.track(session_keys)
 
       start_list = transition_between_pages({"path", "/"}, {"path", "/list"})
@@ -46,7 +46,7 @@ defmodule Sirko.Db.TransitionTest do
       assert popular_exit.properties["updated_at"] != nil
     end
 
-    test "increases counts for a transition when it exists", %{ session_keys: session_keys } do
+    test "increases counts for a transition when it exists", %{session_keys: session_keys} do
       load_fixture("transitions")
 
       initial_transition = transition_between_paths("/list", "/popular")
@@ -56,10 +56,14 @@ defmodule Sirko.Db.TransitionTest do
       updated_transition = transition_between_paths("/list", "/popular")
 
       assert updated_transition.properties["count"] == 7
-      assert updated_transition.properties["updated_at"] != initial_transition.properties["updated_at"]
+
+      assert updated_transition.properties["updated_at"] !=
+               initial_transition.properties["updated_at"]
     end
 
-    test "does not affect transitions which does not belong to the found session", %{ session_keys: session_keys } do
+    test "does not affect transitions which does not belong to the found session", %{
+      session_keys: session_keys
+    } do
       load_fixture("transitions")
 
       Db.Transition.track(session_keys)
@@ -82,7 +86,9 @@ defmodule Sirko.Db.TransitionTest do
       {:ok, [session_keys: session_keys]}
     end
 
-    test "decreases counts for transitions matching the corresponding sessions", %{ session_keys: session_keys } do
+    test "decreases counts for transitions matching the corresponding sessions", %{
+      session_keys: session_keys
+    } do
       initial_transition = transition_between_paths("/list", "/popular")
 
       assert initial_transition.properties["count"] == 4
@@ -104,11 +110,11 @@ defmodule Sirko.Db.TransitionTest do
 
     test "returns a map containing info about the next page to be visited" do
       assert Db.Transition.predict("/list") == %{
-        "total"  => 14,
-        "count"  => 6,
-        "path"   => "/details",
-        "assets" => ["http://example.org/popup.js"]
-      }
+               "total" => 14,
+               "count" => 6,
+               "path" => "/details",
+               "assets" => ["http://example.org/popup.js"]
+             }
     end
 
     test "returns nil when the current page is unknown" do
@@ -117,12 +123,11 @@ defmodule Sirko.Db.TransitionTest do
 
     test "takes the path with the most fresh transitions when there are 2 paths with identical counts" do
       assert Db.Transition.predict("/about") == %{
-        "total"  => 4,
-        "count"  => 2,
-        "path"   => "/popular",
-        "assets" => nil
-      }
-
+               "total" => 4,
+               "count" => 2,
+               "path" => "/popular",
+               "assets" => nil
+             }
     end
   end
 

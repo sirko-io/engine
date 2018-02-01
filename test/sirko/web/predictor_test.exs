@@ -9,28 +9,31 @@ defmodule Sirko.Web.PredictorTest do
   setup do
     load_fixture("transitions")
 
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end
 
   test "returns details of the next page" do
-    res = conn(:post, "/")
-    |> call(%{"current" => "/list"})
+    res =
+      conn(:post, "/")
+      |> call(%{"current" => "/list"})
 
-    expected_body = Poison.encode!(%{
-      path:   "/details",
-      assets: ["http://example.org/popup.js"]
-    })
+    expected_body =
+      Poison.encode!(%{
+        path: "/details",
+        assets: ["http://example.org/popup.js"]
+      })
 
     assert res == expected_body
   end
 
   test "returns an empty json string when the current page is a new one" do
-    res = conn(:post, "/")
-    |> call(%{"current" => "/reports"})
+    res =
+      conn(:post, "/")
+      |> call(%{"current" => "/reports"})
 
     assert res == "{}"
   end

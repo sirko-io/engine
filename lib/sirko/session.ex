@@ -9,7 +9,8 @@ defmodule Sirko.Session do
 
   alias Sirko.{Db, Entry}
 
-  @default_key_length 32 # bytes
+  # bytes
+  @default_key_length 32
 
   # how many session keys must be processed in one cypher query
   @chunk_sessions_on 100
@@ -57,15 +58,15 @@ defmodule Sirko.Session do
   """
   def expire_all_inactive(inactive_session_in) do
     inactive_session_in
-    |> Db.Session.all_inactive
+    |> Db.Session.all_inactive()
     |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
-    |> Enum.each(fn(keys) -> expire(keys) end)
+    |> Enum.each(fn keys -> expire(keys) end)
   end
 
   defp generate_key do
     # TODO: does it provide a unique value?
     @default_key_length
-    |> :crypto.strong_rand_bytes
+    |> :crypto.strong_rand_bytes()
     |> Base.encode16(case: :lower)
   end
 end

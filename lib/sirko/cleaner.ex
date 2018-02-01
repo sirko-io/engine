@@ -18,12 +18,12 @@ defmodule Sirko.Cleaner do
   def clean_up(stale_session_in) do
     # TODO: do we need to do this operation in a transaction?
     stale_session_in
-    |> Db.Session.all_stale
+    |> Db.Session.all_stale()
     |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
-    |> Enum.each(fn(keys) -> Db.Transition.exclude_sessions(keys) end)
+    |> Enum.each(fn keys -> Db.Transition.exclude_sessions(keys) end)
 
     Db.Session.remove_stale(stale_session_in)
-    Db.Transition.remove_idle
-    Db.Page.remove_lonely
+    Db.Transition.remove_idle()
+    Db.Page.remove_lonely()
   end
 end

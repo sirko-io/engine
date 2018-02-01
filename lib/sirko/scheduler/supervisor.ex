@@ -41,7 +41,7 @@ defmodule Sirko.Scheduler.Supervisor do
     Supervisor.child_spec(
       {
         Worker,
-        [timeout: expire_sessions_every, callback: callback, name: name],
+        [timeout: expire_sessions_every, callback: callback, name: name]
       },
       id: name
     )

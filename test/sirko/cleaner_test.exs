@@ -7,9 +7,9 @@ defmodule Sirko.CleanerTest do
   import Sirko.Cleaner
 
   setup do
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end

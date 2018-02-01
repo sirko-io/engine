@@ -7,27 +7,29 @@ defmodule Sirko.Web.SessionTest do
   import Sirko.Web.Session, only: [call: 2]
 
   setup do
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end
 
   test "returns nil when the transition hasn't happened yet" do
-    res = conn(:post, "/")
-    |> call(%{"current" => "/list"})
+    res =
+      conn(:post, "/")
+      |> call(%{"current" => "/list"})
 
     assert res == nil
   end
 
   test "returns a tuple with a session key when the transition has happened" do
-    res = conn(:post, "/")
-    |> call(%{
-      "current"  => "/list",
-      "referrer" => "/home",
-      "assets"   => ["http://example.org"]
-    })
+    res =
+      conn(:post, "/")
+      |> call(%{
+        "current" => "/list",
+        "referrer" => "/home",
+        "assets" => ["http://example.org"]
+      })
 
     {name, session_key, opts} = res
 

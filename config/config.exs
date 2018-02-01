@@ -11,12 +11,15 @@ config :bolt_sips, Bolt,
 
 config :sirko, :web,
   port: System.get_env("SIRKO_HTTP_PORT") || 4000,
-  client_url: System.get_env("SIRKO_CLIENT_URL") # the address of a site for which predictions should be made
+  # the address of a site for which predictions should be made
+  client_url: System.get_env("SIRKO_CLIENT_URL")
 
 # Settings for sort of an internal CRON (https://en.wikipedia.org/wiki/Cron)
 config :sirko, :scheduler,
-  expire_sessions_every: 3600 * 1000, # how often the scheduler should be launched to expire inactive sessions
-  remove_stale_data_every: 3600 * 1000 * 24 # how often the scheduler should be launched to remove stale data
+  # how often the scheduler should be launched to expire inactive sessions
+  expire_sessions_every: 3600 * 1000,
+  # how often the scheduler should be launched to remove stale data
+  remove_stale_data_every: 3600 * 1000 * 24
 
 # Settings which affect the behavior of the engine. These settings are used by different parts of the engine.
 # To get more details about them, read the config schema: config/sirko.schema.exs
@@ -26,12 +29,13 @@ config :sirko, :engine,
   confidence_threshold: 0.2
 
 config :logger, :console,
-  level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom,
+  level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom(),
   format: "$date $time [$level] $metadata$message\n"
 
 config :rollbax,
-  environment: Mix.env |> Atom.to_string,
-  access_token: "", # give it an empty string to avoid failures in the dev and test env
+  environment: Mix.env() |> Atom.to_string(),
+  # give it an empty string to avoid failures in the dev and test env
+  access_token: "",
   enabled: false
 
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

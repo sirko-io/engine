@@ -11,9 +11,9 @@ defmodule Sirko.WebTest do
   setup do
     load_fixture("transitions")
 
-    on_exit fn ->
+    on_exit(fn ->
       cleanup_db()
-    end
+    end)
 
     :ok
   end
@@ -34,9 +34,8 @@ defmodule Sirko.WebTest do
     test "returns details of the next page" do
       conn = call("/list")
 
-      assert conn.resp_body == Poison.encode!(
-        %{path: "/details", assets: ["http://example.org/popup.js"]}
-      )
+      assert conn.resp_body ==
+               Poison.encode!(%{path: "/details", assets: ["http://example.org/popup.js"]})
     end
 
     test "rejects requests with the blank current parameter" do

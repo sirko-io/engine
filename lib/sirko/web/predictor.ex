@@ -19,11 +19,11 @@ defmodule Sirko.Web.Predictor do
   end
 
   defp log_prediction(current_path, nil) do
-    Logger.info fn -> "No prediction for #{current_path}" end
+    Logger.info(fn -> "No prediction for #{current_path}" end)
   end
 
   defp log_prediction(current_path, next_page) do
-    Logger.info fn -> "Predicted #{next_page.path} for #{current_path}" end
+    Logger.info(fn -> "Predicted #{next_page.path} for #{current_path}" end)
   end
 
   defp build_body(nil), do: "{}"

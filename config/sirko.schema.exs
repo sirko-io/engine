@@ -12,9 +12,9 @@ https://github.com/bitwalker/conform.
       datatype: :binary,
       default: "bolt://localhost:7687",
       doc: """
-           A url to a Neo4j instance. The engine only works with a bolt protocol.
-           To provide credentials, use this format: bolt://username:password@host:7687
-           """,
+      A url to a Neo4j instance. The engine only works with a bolt protocol.
+      To provide credentials, use this format: bolt://username:password@host:7687
+      """,
       hidden: false,
       to: "bolt_sips.Elixir.Bolt.url"
     ],
@@ -62,10 +62,10 @@ https://github.com/bitwalker/conform.
       commented: false,
       datatype: :binary,
       doc: """
-           An access token to http://rollbar.com. This service provides a great feature to track all errors
-           happening in an application. So, you will be aware if something happens wrong without looking into
-           log files. If you don't want to use it, comment this option out.
-           """,
+      An access token to http://rollbar.com. This service provides a great feature to track all errors
+      happening in an application. So, you will be aware if something happens wrong without looking into
+      log files. If you don't want to use it, comment this option out.
+      """,
       hidden: false,
       to: "rollbax.access_token"
     ],
@@ -80,7 +80,8 @@ https://github.com/bitwalker/conform.
       commented: false,
       datatype: :integer,
       default: 4000,
-      doc: "An HTTP port to be used by the HTTP server. This port must be used to communicate to the engine.",
+      doc:
+        "An HTTP port to be used by the HTTP server. This port must be used to communicate to the engine.",
       hidden: false,
       to: "sirko.web.port"
     ],
@@ -97,10 +98,10 @@ https://github.com/bitwalker/conform.
       datatype: :integer,
       default: 60,
       doc: """
-           Time in minutes when sessions without activity get treated as inactive.
-           Inactive sessions get expired and the tracking gets stopped for them.
-           If a user comes with an expired session, a new session gets started.
-           """,
+      Time in minutes when sessions without activity get treated as inactive.
+      Inactive sessions get expired and the tracking gets stopped for them.
+      If a user comes with an expired session, a new session gets started.
+      """,
       hidden: true,
       to: "sirko.engine.inactive_session_in"
     ],
@@ -109,14 +110,14 @@ https://github.com/bitwalker/conform.
       datatype: :integer,
       default: 7,
       doc: """
-           Duration in days of keeping expired sessions in the DB. Expired sessions which
-           live longer that this value get removed from the DB and gets excluded by the prediction model.
-           You might need to increase this value, if your site don't get big traffic.
-           A higher number will allow the engine to get enough data to make predictions.
-           On the other hand, if the navigation of your site changes too often,
-           it is recommended to keep a lower value in order to exclude noise which effect
-           correctness of the prediction.
-           """,
+      Duration in days of keeping expired sessions in the DB. Expired sessions which
+      live longer that this value get removed from the DB and gets excluded by the prediction model.
+      You might need to increase this value, if your site don't get big traffic.
+      A higher number will allow the engine to get enough data to make predictions.
+      On the other hand, if the navigation of your site changes too often,
+      it is recommended to keep a lower value in order to exclude noise which effect
+      correctness of the prediction.
+      """,
       hidden: false,
       to: "sirko.engine.stale_session_in"
     ],
@@ -125,10 +126,10 @@ https://github.com/bitwalker/conform.
       datatype: :float,
       default: 0.2,
       doc: """
-           A threshold of confidence to be met in order to add the prerender hint. When it is set to 1,
-           the prerender hint will only be added in case of 100% confidence that the current user will visit
-           a predicted page.
-           """,
+      A threshold of confidence to be met in order to add the prerender hint. When it is set to 1,
+      the prerender hint will only be added in case of 100% confidence that the current user will visit
+      a predicted page.
+      """,
       hidden: false,
       to: "sirko.engine.confidence_threshold"
     ]
@@ -139,14 +140,12 @@ https://github.com/bitwalker/conform.
 
       access_token != nil && access_token != ""
     end,
-
     "sirko.engine.inactive_session_in": fn conf ->
       [{_, time_in_mins}] = Conform.Conf.get(conf, "sirko.engine.inactive_session_in")
 
       # converts time to milliseconds
       time_in_mins * 60 * 1000
     end,
-
     "sirko.engine.stale_session_in": fn conf ->
       [{_, time_in_days}] = Conform.Conf.get(conf, "sirko.engine.stale_session_in")
 

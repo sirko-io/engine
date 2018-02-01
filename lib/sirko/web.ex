@@ -11,19 +11,26 @@ defmodule Sirko.Web do
   alias Sirko.Web.{Session, Predictor}
   alias Plug.Adapters.Cowboy
 
-  plug Plug.Logger
-  plug Plug.Static,
+  plug(Plug.Logger)
+
+  plug(
+    Plug.Static,
     at: "assets",
     from: :sirko
+  )
 
-  plug Sirko.Plugs.Access
-  plug Sirko.Plugs.Cors
-  plug Plug.Parsers, parsers:      [:json],
-                     pass:         ["application/json"],
-                     json_decoder: Poison
+  plug(Sirko.Plugs.Access)
+  plug(Sirko.Plugs.Cors)
 
-  plug :match
-  plug :dispatch
+  plug(
+    Plug.Parsers,
+    parsers: [:json],
+    pass: ["application/json"],
+    json_decoder: Poison
+  )
+
+  plug(:match)
+  plug(:dispatch)
 
   def child_spec(opts) do
     cowboy_opts = [
@@ -32,7 +39,7 @@ defmodule Sirko.Web do
 
     client_url = Keyword.get(opts, :client_url)
 
-    Logger.info fn -> "Expecting requests from #{client_url}" end
+    Logger.info(fn -> "Expecting requests from #{client_url}" end)
 
     Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
   end
@@ -52,6 +59,7 @@ defmodule Sirko.Web do
         conn
         |> send_resp(422, "")
         |> halt
+
       _ ->
         tracking = track(conn, params)
         predicting = predict(conn, params)
@@ -62,7 +70,7 @@ defmodule Sirko.Web do
     end
   end
 
-  if Mix.env == :dev do
+  if Mix.env() == :dev do
     # This action is only required for the dev environment. The prod environment
     # contains the js client in the priv/static folder. Hence, the Plug.Static
     # is able to serve it.
