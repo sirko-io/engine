@@ -16,25 +16,42 @@ defmodule Sirko.Web.PredictorTest do
     :ok
   end
 
-  test "returns details of the next page" do
+  test "returns a list of pages" do
     res =
       conn(:post, "/")
       |> call(%{"current" => "/list"})
 
+    expected_pages = [
+      %{
+        path: "/about",
+        confidence: 4 / 14
+      },
+      %{
+        path: "/details",
+        confidence: 6 / 14
+      }
+    ]
+
+    expected_assets = [
+      "details.js",
+      "app.js",
+      "about.js"
+    ]
+
     expected_body =
       Poison.encode!(%{
-        path: "/details",
-        assets: ["http://example.org/popup.js"]
+        pages: expected_pages,
+        assets: expected_assets
       })
 
     assert res == expected_body
   end
 
-  test "returns an empty json string when the current page is a new one" do
+  test "returns an empty list when the current page is a new one" do
     res =
       conn(:post, "/")
       |> call(%{"current" => "/reports"})
 
-    assert res == "{}"
+    assert res == "{\"pages\":[],\"assets\":[]}"
   end
 end

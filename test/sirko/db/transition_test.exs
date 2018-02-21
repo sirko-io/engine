@@ -101,33 +101,59 @@ defmodule Sirko.Db.TransitionTest do
     end
   end
 
-  describe "predict/1" do
+  describe "predict/2" do
     setup do
       load_fixture("transitions")
 
       :ok
     end
 
-    test "returns a map containing info about the next page to be visited" do
-      assert Db.Transition.predict("/list") == %{
-               "total" => 14,
-               "count" => 6,
-               "path" => "/details",
-               "assets" => ["http://example.org/popup.js"]
-             }
+    test "returns a list of predicted pages" do
+      assert Db.Transition.predict("/list", 2) == [
+               %{
+                 "confidence" => 6 / 14,
+                 "path" => "/details",
+                 "assets" => [
+                   "details.js",
+                   "app.js"
+                 ]
+               },
+               %{
+                 "confidence" => 4 / 14,
+                 "path" => "/about",
+                 "assets" => [
+                   "about.js",
+                   "app.js"
+                 ]
+               }
+             ]
     end
 
-    test "returns nil when the current page is unknown" do
-      assert Db.Transition.predict("/settings") == nil
+    test "takes paths with the most fresh transitions when there are 2 paths with identical counts" do
+      assert Db.Transition.predict("/about") == [
+               %{
+                 "confidence" => 2 / 4,
+                 "path" => "/popular",
+                 "assets" => nil
+               }
+             ]
     end
 
-    test "takes the path with the most fresh transitions when there are 2 paths with identical counts" do
-      assert Db.Transition.predict("/about") == %{
-               "total" => 4,
-               "count" => 2,
-               "path" => "/popular",
-               "assets" => nil
-             }
+    test "returns only pages which pass confidence threshold" do
+      assert Db.Transition.predict("/list", 2, 0.4) == [
+               %{
+                 "confidence" => 6 / 14,
+                 "path" => "/details",
+                 "assets" => [
+                   "details.js",
+                   "app.js"
+                 ]
+               }
+             ]
+    end
+
+    test "returns an empty list when the current page is connected to exit" do
+      assert Db.Transition.predict("/popular") == []
     end
   end
 

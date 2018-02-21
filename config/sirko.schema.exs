@@ -132,6 +132,20 @@ https://github.com/bitwalker/conform.
       """,
       hidden: false,
       to: "sirko.engine.confidence_threshold"
+    ],
+    "sirko.engine.max_pages_in_prediction": [
+      commented: false,
+      datatype: :integer,
+      default: 1,
+      doc: """
+      A max number of pages which will be predicted to a user, hence, a number of pages
+      which will be prefetched. They still should pass the confidence verification.
+      For example, if the confidence threshold is 0.5, only 2 pages might be returned,
+      even though this option specifies 10. So, the confidence threshold should be
+      considered while setting this option.
+      """,
+      hidden: false,
+      to: "sirko.engine.max_pages_in_prediction"
     ]
   ],
   transforms: [

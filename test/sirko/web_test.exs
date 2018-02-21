@@ -31,11 +31,13 @@ defmodule Sirko.WebTest do
       assert get_resp_header(conn, "access-control-allow-methods") != nil
     end
 
-    test "returns details of the next page" do
+    test "returns candidates" do
       conn = call("/list")
 
-      assert conn.resp_body ==
-               Poison.encode!(%{path: "/details", assets: ["http://example.org/popup.js"]})
+      resp = Poison.decode!(conn.resp_body)
+
+      assert Enum.count(resp["pages"]) == 2
+      assert Enum.count(resp["assets"]) == 3
     end
 
     test "rejects requests with the blank current parameter" do

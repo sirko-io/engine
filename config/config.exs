@@ -26,7 +26,8 @@ config :sirko, :scheduler,
 config :sirko, :engine,
   inactive_session_in: 3600 * 1000,
   stale_session_in: 3600 * 1000 * 24 * 7,
-  confidence_threshold: 0.2
+  confidence_threshold: 0.2,
+  max_pages_in_prediction: 1
 
 config :logger, :console,
   level: (System.get_env("SIRKO_DEBUG_LEVEL") || "info") |> String.to_atom(),

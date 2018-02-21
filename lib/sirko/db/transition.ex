@@ -45,36 +45,41 @@ defmodule Sirko.Db.Transition do
   end
 
   @doc """
-  Returns a map representing info about a page which most likely will be
-  visited by a user. The returned map contains the path to the page, assets of the page, the count
-  of transitions made to the page and the total number of transitions made from the current page.
+  Returns a list of maps with pages which most likely will be visited.
+  by a user. Every map contains the path, assets and confidence
+  of visiting the page. All returned pages passes the given confidence threshold.
 
   Examples
 
-     iex> Sirko.Db.Transition.predict("/details")
-     %{"path" => "/project", "count" => 5, "total" => 15, "assets" => [...]}
+     iex> Sirko.Db.Transition.predict("/details", 2, 0.1)
+     [%{"confidence" => 0.3, "path" => "/project", "assets" => [...]},
+     %{"confidence" => 0.5, "path" => "/blog", "assets" => [...]}]
 
   """
-  def predict(current_path) do
+  def predict(current_path, limit \\ 1, confidence_threshold \\ 0) do
     query = """
       MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(p:Page)
+      WHERE p.path IS NOT NULL
+      WITH sum(t.count) AS total
 
-      WITH t, p
+      MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(p:Page)
+      WHERE p.path IS NOT NULL
+
+      WITH t, p, total
       ORDER BY t.count DESC, t.updated_at DESC
-      LIMIT 1
+      LIMIT {limit}
 
-      WITH p.path AS path, p.assets AS assets, t.count AS count
+      WITH p, (toFloat(t.count) / toFloat(total)) AS confidence
+      WHERE confidence >= {threshold}
 
-      MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(:Page)
-      WITH sum(t.count) AS total, count, path, assets
-
-      RETURN path, assets, count, total
+      RETURN p.path AS path,
+             p.assets AS assets,
+             confidence
     """
 
-    case Neo4j.query(query, %{current_path: current_path}) do
-      [res] -> res
-      _ -> nil
-    end
+    opts = %{current_path: current_path, limit: limit, threshold: confidence_threshold}
+
+    Neo4j.query(query, opts)
   end
 
   @doc """
