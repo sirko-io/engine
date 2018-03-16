@@ -2,10 +2,9 @@
 
 [![Build Status](https://travis-ci.org/sirko-io/engine.svg?branch=master)](https://travis-ci.org/sirko-io/engine)
 
-It is a simple engine to track users' navigation on a site and predict a next page which most likely will be visited by the current user.
-As soon as the engine predicts the next page, a client part of the solution prefetches the page and assets (JavaScript and CSS files) for it, hence, the user gets faster response and better experience once they navigate to the predicted page.
+It is a solution for supporting users during navigation. Learning how users navigate the engine precaches resources (pages, JS and CSS files) a user might need in a next transition. The precached resources get accumulated for offline use and get served when the user is offline. Precaching resources and offline work improve user's experience and engagement rate.
 
-Currently, this solution is only recommended for public pages which meet the following criteria:
+Currently, this solution is only recommended for pages which meet the following criteria:
 
 - **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
 - **pages are served over a secure connection (HTTPS)**. The client part is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers).
@@ -14,7 +13,7 @@ Currently, this solution is only recommended for public pages which meet the fol
 
 ### Users on mobile devices
 
-In order to save a battery of users on mobile devices the engine ignores such users.
+Navigation on mobile devices might be different, thus, to make correct predictions for desktop and mobile users we need to split them in the prediction model. It might be developed later.
 
 ### Browser support
 
@@ -28,6 +27,7 @@ The solution works in browsers which [support service workers](https://caniuse.c
   - [Install without containers](#install-without-containers)
   - [Nginx virtual host](#nginx-virtual-host)
   - [Client integration](#client-integration)
+- [Offline work](#offline-work)
 - [Getting accuracy](#getting-accuracy)
 - [Catching errors](#catching-errors)
 - [Contributing](/CONTRIBUTING.md)
@@ -45,7 +45,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.3.0/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.0/config/sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -83,7 +83,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.3.0/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.0/config/sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -151,7 +151,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 1. Download the latest release:
 
     ```
-    $ wget https://github.com/sirko-io/engine/releases/download/v0.3.0/sirko.tar.gz
+    $ wget https://github.com/sirko-io/engine/releases/download/v0.4.0/sirko.tar.gz
     ```
 
 2. Unpack the archive:
@@ -292,9 +292,31 @@ Another way is to copy [this script](https://github.com/sirko-io/client/blob/mas
 
 Once you've integrated the client, visit your site, open a development webtool (F12) and make sure that requests to the engine have status 200. If you use Chrome, click on the _Application_ tab, then click on the _Service workers_ item in the left sidebar. There you should see all registered service workers on your page. You need to find a `sirko_sw.js` service worker, it should have the `activated and running` state and no errors.
 
+## Offline work
+
+By default, all precached resources get removed once the user navigates to a next page. It is a necessary step to avoid shipping stale pages. If you want your site to work offline, you might enable an offline mode by adding:
+
+```javascript
+sirko('offline', true);
+```
+
+to the script block where you've defined the url to the engine. This option means all precached resources should be kept in the cache and served when the user is offline. Only pages which were predicted by the engine will work offline.
+
+If you want to cache the entire site for offline use, you need to open the `config/sirko.conf` file and set
+
+```
+# now all pages will pass the threshold
+sirko.engine.confidence_threshold = 0
+
+# hopefully, your site has less number of pages than this value
+sirko.engine.max_pages_in_prediction = 1000_000_000
+```
+
+This configuration means that all pages will be fetched whenever the user moves to another page. Even if they are cached, they will be fetched again to keep the most fresh version. The load on your backend might be reduced if you set expiration for your resources, a [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) which is used in precaching resources respects the [Cache control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header.
+
 ## Getting accuracy
 
-If you want to know accuracy of predictions made for your site, you can integrate the sirko client with a tracking service which is able to track custom events and execute formulas over written data. Use the following code as an example:
+If you want to know accuracy of predictions made for your site, you might integrate the sirko client with a tracking service which is able to track custom events and execute formulas over written data. Use the following code as an example:
 
 ```html
 <script>
