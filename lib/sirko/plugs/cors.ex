@@ -1,11 +1,11 @@
 defmodule Sirko.Plugs.Cors do
   @moduledoc """
-  Defines CORS headers to allow the client to requests the app.
+  Defines CORS headers to allow the client to request the app.
   """
 
   import Plug.Conn
 
-  @allowed_http_methods "post"
+  @allowed_http_methods "get, post"
   @allowed_http_headers "Content-Type"
 
   def init(opts), do: opts

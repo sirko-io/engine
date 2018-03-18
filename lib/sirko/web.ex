@@ -12,6 +12,7 @@ defmodule Sirko.Web do
   alias Plug.Adapters.Cowboy
 
   plug(Plug.Logger)
+  plug(Sirko.Plugs.Cors)
 
   plug(
     Plug.Static,
@@ -20,7 +21,6 @@ defmodule Sirko.Web do
   )
 
   plug(Sirko.Plugs.Access)
-  plug(Sirko.Plugs.Cors)
 
   plug(
     Plug.Parsers,
