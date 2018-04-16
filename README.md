@@ -4,6 +4,8 @@
 
 It is a solution for supporting users during navigation. Learning how users navigate the engine precaches resources (pages, JS and CSS files) a user might need in a next transition. The precached resources get accumulated for offline use and get served when the user is offline. Precaching resources and offline work improve user's experience and engagement rate.
 
+Motivation and technical details are described in [that article](https://nesteryuk.info/2018/04/08/automate-precaching-resources.html).
+
 Currently, this solution is only recommended for pages which meet the following criteria:
 
 - **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
@@ -309,7 +311,7 @@ If you want to cache the entire site for offline use, you need to open the `conf
 sirko.engine.confidence_threshold = 0
 
 # hopefully, your site has less number of pages than this value
-sirko.engine.max_pages_in_prediction = 1000_000_000
+sirko.engine.max_pages_in_prediction = 1000000000
 ```
 
 This configuration means that all pages will be fetched whenever the user moves to another page. Even if they are cached, they will be fetched again to keep the most fresh version. The load on your backend might be reduced if you set expiration for your resources, a [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) which is used in precaching resources respects the [Cache control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header.
