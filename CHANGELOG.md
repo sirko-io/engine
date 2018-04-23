@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.1 (23 April 2018)
+
+### Fixed
+
+- The client only sends paths of pages to the engine. For example, `https://example.org/blog` is a URL of the current page, in this case only `/blog` gets sent. The path is used to precache a page. A bug in code cutting off the origin produced broken paths. For example, if a URL was like this `https://example.org/bar/foo/main.html`, only `/main.html` would've been sent to the engine. It leaded to precaching pages which didn't exist. Now the client takes paths as they are ([sirko-io/client#33](https://github.com/sirko-io/client/issues/33)).
+ - Some browsers embed internal assets (for example, `chrome-extension://bmdblncegkenkacieihfhpjfppoconhi/scripts/in-page-script.js`) into pages. URLs of those assets were gathered by the client and later there was an an attempt to precache them. Apparently, they cannot be precached, thus, browsers threw errors. Now the client only gathers URLs which lead to the valid HTTP protocol ([sirko-io/client#30](https://github.com/sirko-io/client/issues/30)).
+
 ## v0.4.0 (18 March 2018)
 
 ### Changed

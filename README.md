@@ -47,7 +47,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.0/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.1/config/sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -85,7 +85,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.0/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.1/config/sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -153,7 +153,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 1. Download the latest release:
 
     ```
-    $ wget https://github.com/sirko-io/engine/releases/download/v0.4.0/sirko.tar.gz
+    $ wget https://github.com/sirko-io/engine/releases/download/v0.4.1/sirko.tar.gz
     ```
 
 2. Unpack the archive:
