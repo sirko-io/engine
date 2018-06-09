@@ -9,7 +9,7 @@ defmodule Sirko.Web do
   require Logger
 
   alias Sirko.Web.{Session, Predictor}
-  alias Plug.Adapters.Cowboy
+  alias Plug.Adapters.Cowboy2
 
   plug(Plug.Logger)
   plug(Sirko.Plugs.Cors)
@@ -34,14 +34,18 @@ defmodule Sirko.Web do
 
   def child_spec(opts) do
     cowboy_opts = [
-      port: Keyword.get(opts, :port)
+      scheme: :http,
+      plug: __MODULE__,
+      options: [
+        port: Keyword.get(opts, :port)
+      ]
     ]
 
     client_url = Keyword.get(opts, :client_url)
 
     Logger.info(fn -> "Expecting requests from #{client_url}" end)
 
-    Cowboy.child_spec(:http, Sirko.Web, [], cowboy_opts)
+    Cowboy2.child_spec(cowboy_opts)
   end
 
   def init(opts), do: opts

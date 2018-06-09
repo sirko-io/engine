@@ -35,14 +35,14 @@ defmodule Sirko.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cowboy, "~> 1.1"},
-      {:plug, "~> 1.4"},
+      {:cowboy, "~> 2.4"},
+      {:plug, "~> 1.5"},
       {:bolt_sips, github: "florinpatrascu/bolt_sips"},
-      {:rollbax, "~> 0.8"},
+      {:rollbax, "~> 0.9"},
       {:poison, "~> 3.1"},
       {:distillery, "~> 1.5", require: false},
       {:conform, "~> 2.5", require: false},
-      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
+      {:credo, "~> 0.9", only: [:dev, :test], runtime: false}
     ]
   end
 end
