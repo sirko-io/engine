@@ -9,6 +9,8 @@ defmodule Sirko.Db.Session do
 
   alias Sirko.{Neo4j, Entry}
 
+  @type session_key :: Sirko.Session.session_key()
+
   @doc """
   Creates a session relation between 2 visited pages if it is
   a first transition between those pages during the current session.
@@ -17,6 +19,7 @@ defmodule Sirko.Db.Session do
 
   If pages don't exist, they get created.
   """
+  @spec track(session_key, entry :: Entry.t()) :: any
   def track(session_key, entry) do
     %Entry{
       referrer_path: referrer_path,
@@ -48,6 +51,7 @@ defmodule Sirko.Db.Session do
   this method iterates through the given list of session keys and creates relations between
   last visited pages and the exit point.
   """
+  @spec expire(session_keys :: [session_key]) :: any
   def expire(session_keys) do
     query = """
       MATCH ()-[s:SESSION]->()
@@ -75,6 +79,7 @@ defmodule Sirko.Db.Session do
   Returns true if a session relation with the given key exists and
   it isn't expired. Otherwise, false.
   """
+  @spec active?(session_key) :: boolean
   def active?(session_key) do
     query = """
       MATCH ()-[s:SESSION { key: {key} }]->()
@@ -95,6 +100,7 @@ defmodule Sirko.Db.Session do
   @doc """
   Returns a list of session keys which are inactive for the given number of milliseconds.
   """
+  @spec all_inactive(time :: integer) :: [session_key]
   def all_inactive(time) do
     query = """
       MATCH ()-[s:SESSION]->()
@@ -116,6 +122,7 @@ defmodule Sirko.Db.Session do
   @doc """
   Returns a list of session keys which are expired for the given number of milliseconds.
   """
+  @spec all_stale(time :: integer) :: [session_key]
   def all_stale(time) do
     query = """
       MATCH ()-[s:SESSION]->()
@@ -131,6 +138,7 @@ defmodule Sirko.Db.Session do
   @doc """
   Removes sessions which are expired for the given number of milliseconds.
   """
+  @spec remove_stale(time :: integer) :: any
   def remove_stale(time) do
     query = """
       MATCH ()-[s:SESSION]->()

@@ -14,6 +14,7 @@ defmodule Sirko.Plugs.Access do
   Returns the conn structure without verifying info in case of the OPTIONS request.
   Some browsers (Firefox) don't send the referer header with this kind of the request.
   """
+  @spec call(conn :: Plug.Conn.t(), opts :: Keyword.t()) :: Plug.Conn.t()
   def call(%{method: "OPTIONS"} = conn, _), do: conn
 
   def call(conn, _) do

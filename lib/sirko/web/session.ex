@@ -30,6 +30,8 @@ defmodule Sirko.Web.Session do
 
   Returns nil, when a transition hasn't happened yet.
   """
+  @spec call(conn :: Plug.Conn.t(), params :: map) ::
+          {String.t(), Sirko.Session.session_key(), Keyword.t()} | nil
   def call(conn, params) do
     {entry, session_key} = extract_details(conn, params)
 

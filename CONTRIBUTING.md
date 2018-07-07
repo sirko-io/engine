@@ -20,7 +20,7 @@ If you have any thoughts about models, technologies, solutions, features, please
 
 ### Dependencies
 
- - [Elixir](http://elixir-lang.org/install.html) 1.4.*
+ - [Elixir](http://elixir-lang.org/install.html) 1.6.*
  - [Neo4j](https://neo4j.com/download/) 3.*
  - [Npm](https://npmjs.com)
 
@@ -86,9 +86,15 @@ The project doesn't have any specific requirements to the code. To be consistent
 $ mix credo
 ```
 
-Please, take your time and learn how to use this tool. It won't require more than 10 mins.
+Please, take your time and learn how to use this tool. It won't take more than 10 mins.
 
-Currently, new changes shouldn't bring inconsistency issues and warnings. Later we might be more strict.
+Currently, new changes shouldn't bring inconsistencies and warnings. Later we might be more strict.
+
+Also, it is recommended to define [typespecs](https://hexdocs.pm/elixir/typespecs.html) for public methods. Then, to check possible type inconsistencies and bugs, use a [Dialyzer](http://erlang.org/doc/man/dialyzer.html) tool via a [Dialyxir](https://github.com/jeremyjh/dialyxir) library:
+
+```
+$ mix dialyzer
+```
 
 ## Creating a PR
 

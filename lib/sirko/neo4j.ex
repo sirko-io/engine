@@ -7,10 +7,13 @@ defmodule Sirko.Neo4j do
 
   alias Bolt.Sips, as: Bolt
 
+  @type result :: [map] | Exception.t()
+
   @doc """
   Executes the given query and logs the duration of its execution.
   Raises an error if the query fails.
   """
+  @spec query(query :: String.t(), params :: map) :: result
   def query(query, params \\ %{}) do
     {duration, query_res} = :timer.tc(Bolt, :query, [Bolt.pool_name(), query, params])
 

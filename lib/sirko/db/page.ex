@@ -9,6 +9,7 @@ defmodule Sirko.Db.Page do
   @doc """
   Removes pages which don't have any inbound/outbound relations.
   """
+  @spec remove_lonely() :: any
   def remove_lonely do
     query = """
       MATCH (page:Page)

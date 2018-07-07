@@ -6,4 +6,10 @@ defmodule Sirko.Entry do
   defstruct current_path: nil,
             referrer_path: nil,
             assets: []
+
+  @type t :: %__MODULE__{
+          current_path: String.t(),
+          referrer_path: String.t(),
+          assets: [String.t()]
+        }
 end

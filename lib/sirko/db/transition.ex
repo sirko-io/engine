@@ -5,10 +5,13 @@ defmodule Sirko.Db.Transition do
 
   alias Sirko.Neo4j, as: Neo4j
 
+  @type session_key :: Sirko.Session.session_key()
+
   @doc """
   Iterates through the given list of session keys and updates counts of visits
   for transition relations which correspond the sessions.
   """
+  @spec track(session_keys :: [session_key]) :: any
   def track(session_keys) do
     query = """
       MATCH (a)-[s:SESSION]->(b)
@@ -33,6 +36,7 @@ defmodule Sirko.Db.Transition do
   Finds sessions with the given keys and subtracts their counts from
   counts of corresponding transactions.
   """
+  @spec exclude_sessions(session_keys :: [session_key]) :: any
   def exclude_sessions(session_keys) do
     query = """
       MATCH (a)-[s:SESSION]->(b)
@@ -56,6 +60,8 @@ defmodule Sirko.Db.Transition do
      %{"confidence" => 0.5, "path" => "/blog", "assets" => [...]}]
 
   """
+  @spec predict(current_path :: String.t(), limit :: integer, confidence_threshold :: integer) ::
+          Neo4j.result()
   def predict(current_path, limit \\ 1, confidence_threshold \\ 0) do
     query = """
       MATCH (:Page {path: {current_path} })-[t:TRANSITION]->(p:Page)
@@ -85,6 +91,7 @@ defmodule Sirko.Db.Transition do
   @doc """
   Removes all transitions which aren't in use anymore (they have 0 count).
   """
+  @spec remove_idle() :: any
   def remove_idle do
     query = """
       MATCH ()-[t:TRANSITION]->()

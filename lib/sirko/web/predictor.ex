@@ -1,14 +1,15 @@
 defmodule Sirko.Web.Predictor do
   @moduledoc """
-  Makes a prediction by using the current path supplied
-  in the request parameters.
+  Makes a prediction by using the current path supplied in the request parameters.
+  The prediction is returned as a JSON-encoded string.
   """
 
   require Logger
 
   alias Sirko.Predictor
 
-  def call(_conn, params) do
+  @spec call(conn :: Plug.Conn.t(), params :: map) :: String.t()
+  def call(_, params) do
     current_path = params["current"]
 
     list =

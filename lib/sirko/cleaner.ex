@@ -15,6 +15,7 @@ defmodule Sirko.Cleaner do
   by this method as well. After removing sessions and transitions, there can be lonely
   pages (pages without linked relations), those pages get removed too.
   """
+  @spec clean_up(stale_session_in :: integer) :: any
   def clean_up(stale_session_in) do
     # TODO: do we need to do this operation in a transaction?
     stale_session_in

@@ -15,15 +15,22 @@ defmodule Sirko.Session do
   # how many session keys must be processed in one cypher query
   @chunk_sessions_on 100
 
-  @doc """
-  Do nothing if the referrer is nil. We cannot track a transition,
-  because it hasn't happened yet.
-  """
-  def track(%Entry{referrer_path: nil}, _), do: nil
+  @type session_key :: String.t()
 
   @doc """
-  Creates a unique session key and tracks the transition.
+  If the referrer is nil, do nothing. We cannot track a transition,
+  because it hasn't happened yet
+
+  If the given session key is nil, creates a unique session key and
+  tracks the transition. It is a new user.
+
+  Otherwise, adds the given page to the chain of visited pages by
+  a particular user.  If the given session key belongs to an expired
+  session, a new session gets started.
   """
+  @spec track(entry :: Entry.t(), session_key | nil) :: session_key | nil
+  def track(%Entry{referrer_path: nil}, _), do: nil
+
   def track(entry, nil) do
     session_key = generate_key()
 
@@ -31,10 +38,6 @@ defmodule Sirko.Session do
     session_key
   end
 
-  @doc """
-  Adds the given page to the chain of visited pages by a particular user.
-  If the given session key belongs to an expired session, a new session gets started.
-  """
   def track(entry, session_key) do
     if Db.Session.active?(session_key) do
       Db.Session.track(session_key, entry)
@@ -48,6 +51,7 @@ defmodule Sirko.Session do
   Expires sessions found by the given list of session keys,
   increases counts on transition relations which link visited pages within the sessions.
   """
+  @spec expire(session_keys :: [session_key]) :: any
   def expire(session_keys) do
     Db.Session.expire(session_keys)
     Db.Transition.track(session_keys)
@@ -56,6 +60,7 @@ defmodule Sirko.Session do
   @doc """
   Finds and expires sessions which are inactive for `inactive_session_in` milliseconds.
   """
+  @spec expire_all_inactive(inactive_session_in :: integer) :: any
   def expire_all_inactive(inactive_session_in) do
     inactive_session_in
     |> Db.Session.all_inactive()

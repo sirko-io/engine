@@ -10,6 +10,7 @@ defmodule Sirko.Plugs.Cors do
 
   def init(opts), do: opts
 
+  @spec call(conn :: Plug.Conn.t(), opts :: Keyword.t()) :: Plug.Conn.t()
   def call(conn, _ \\ []) do
     conn
     |> put_resp_header("access-control-allow-origin", client_url())

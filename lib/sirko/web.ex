@@ -32,6 +32,7 @@ defmodule Sirko.Web do
   plug(:match)
   plug(:dispatch)
 
+  @spec child_spec(opts :: Keyword.t()) :: any
   def child_spec(opts) do
     cowboy_opts = [
       scheme: :http,
