@@ -59,5 +59,9 @@ release :sirko do
   set version: current_version(:sirko)
 
   plugin Sirko.AssetsPlugin
+
+  set commands: [
+    "import_ga": "rel/commands/import_ga.sh"
+  ]
 end
 

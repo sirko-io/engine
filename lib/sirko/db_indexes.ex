@@ -20,6 +20,6 @@ defmodule Sirko.DbIndexes do
   end
 
   defp add_index_to_page do
-    Neo4j.query("CREATE INDEX ON :Page(path)")
+    Neo4j.query("CREATE CONSTRAINT ON (p:Page) ASSERT p.path IS UNIQUE")
   end
 end

@@ -10,7 +10,8 @@ defmodule Sirko.Mixfile do
       elixir: "~> 1.7",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -40,10 +41,12 @@ defmodule Sirko.Mixfile do
       {:bolt_sips, github: "florinpatrascu/bolt_sips"},
       {:rollbax, "~> 0.9"},
       {:poison, "~> 3.1"},
+      {:oauth2, "~> 0.9", require: false},
       {:distillery, "~> 2.0", require: false},
       {:toml, github: "bitwalker/toml-elixir"},
       {:credo, "~> 0.9", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false},
+      {:benchee, "~> 0.11", only: [:dev]}
     ]
   end
 end

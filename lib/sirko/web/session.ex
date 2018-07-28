@@ -41,11 +41,12 @@ defmodule Sirko.Web.Session do
   end
 
   defp extract_details(conn, params) do
-    entry = %Entry{
-      current_path: params["current"],
-      referrer_path: params["referrer"],
-      assets: params["assets"]
-    }
+    entry =
+      Entry.new(
+        current_path: params["current"],
+        referrer_path: params["referrer"],
+        assets: params["assets"]
+      )
 
     conn = fetch_cookies(conn)
 

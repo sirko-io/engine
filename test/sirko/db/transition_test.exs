@@ -3,7 +3,7 @@ defmodule Sirko.Db.TransitionTest do
 
   import Support.Neo4jHelpers
 
-  alias Sirko.Db, as: Db
+  alias Sirko.Db
 
   setup do
     on_exit(fn ->
@@ -134,7 +134,7 @@ defmodule Sirko.Db.TransitionTest do
                %{
                  "confidence" => 2 / 4,
                  "path" => "/popular",
-                 "assets" => nil
+                 "assets" => []
                }
              ]
     end

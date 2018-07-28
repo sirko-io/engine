@@ -18,19 +18,19 @@ defmodule Sirko.SessionTest do
 
   describe "track/3 the referrer is not given" do
     test "returns nil" do
-      assert track(%Entry{current_path: "/popular"}, nil) == nil
+      assert track(Entry.new(current_path: "/popular", referrer_path: nil), nil) == nil
     end
   end
 
   describe "track/3 the session key is not given" do
     setup do
-      entry = %Entry{current_path: "/popular", referrer_path: "/"}
+      entry = Entry.new(current_path: "/popular", referrer_path: "/")
 
       {:ok, [entry: entry]}
     end
 
     test "starts a new session with a unique key", %{entry: entry} do
-      assert track(entry, nil) != track(entry, nil)
+      refute track(entry, nil) == track(entry, nil)
     end
 
     test "adds a new visited page to a newly started session", %{entry: entry} do
@@ -43,7 +43,7 @@ defmodule Sirko.SessionTest do
   describe "track/3 the session key is given" do
     setup do
       session_key = "skey20"
-      entry = %Entry{current_path: "/details", referrer_path: "/list"}
+      entry = Entry.new(current_path: "/details", referrer_path: "/list")
 
       load_fixture("diverse_sessions")
 

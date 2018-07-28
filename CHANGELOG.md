@@ -6,18 +6,22 @@
 
 - The engine's config (`sirko.conf`) was migrated to a [Toml format](https://en.wikipedia.org/wiki/TOML). Settings didn't change their position in the config file, so it should be easy to find and specify your settings. Don't forget to backup your current config before upgrading.
 
+### Added
+
+ - If you use Google Analytics on your site, now it is possible to import sessions from GA, thus, you can get more realistic predictions earlier. Please, get more details [here](https://github.com/sirko-io/engine#importing-data-from-google-analytics-ga) ([sirko-io/engine#40](https://github.com/sirko-io/engine/issues/40)).
+
 ## v0.4.1 (23 April 2018)
 
 ### Fixed
 
-- The client only sends paths of pages to the engine. For example, `https://example.org/blog` is a URL of the current page, in this case only `/blog` gets sent. The path is used to precache a page. A bug in code cutting off the origin produced broken paths. For example, if a URL was like this `https://example.org/bar/foo/main.html`, only `/main.html` would've been sent to the engine. It leaded to precaching pages which didn't exist. Now the client takes paths as they are ([sirko-io/client#33](https://github.com/sirko-io/client/issues/33)).
+- The client only sends paths of pages to the engine. For example, `https://example.org/blog` is a URL of the current page, in this case only `/blog` gets sent. The path is used to precache a page. A bug in code cutting the origin off produced broken paths. For example, if a URL was like this `https://example.org/bar/foo/main.html`, only `/main.html` would've been sent to the engine. It leaded to precaching pages which didn't exist. Now the client takes paths as they are ([sirko-io/client#33](https://github.com/sirko-io/client/issues/33)).
  - Some browsers embed internal assets (for example, `chrome-extension://bmdblncegkenkacieihfhpjfppoconhi/scripts/in-page-script.js`) into pages. URLs of those assets were gathered by the client and later there was an an attempt to precache them. Apparently, they cannot be precached, thus, browsers threw errors. Now the client only gathers URLs which lead to the valid HTTP protocol ([sirko-io/client#30](https://github.com/sirko-io/client/issues/30)).
 
 ## v0.4.0 (18 March 2018)
 
 ### Changed
 
-- Prefetching several pages might be fine for some sites. So, the engine got changed to return a few pages which get prefetched by the client then. A max number of returned pages is controlled by a `max_pages_in_prediction` setting. The `confidence_threshold` setting is still considered. For example, if the `confidence_threshold` is 0.5, only 2 pages can be returned even though the `max_pages_in_prediction` is 10.
+- Prefetching several pages might be fine for some sites. So, the engine got changed to return a few pages which get prefetched by the client then. A max number of returned pages is controlled by a `sirko.engine.max_pages_in_prediction` setting. The `sirko.engine.confidence_threshold` setting is still considered. For example, if the `sirko.engine.confidence_threshold` is 0.5, only 2 pages can be returned even though the `sirko.engine.max_pages_in_prediction` is 10.
 
 ### Added
 

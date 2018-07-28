@@ -53,6 +53,9 @@ defmodule Sirko.Db.Transition do
   by a user. Every map contains the path, assets and confidence
   of visiting the page. All returned pages passes the given confidence threshold.
 
+  If a page doesn't have the assets property, an empty list will be returned as
+  a default value.
+
   Examples
 
      iex> Sirko.Db.Transition.predict("/details", 2, 0.1)
@@ -79,7 +82,7 @@ defmodule Sirko.Db.Transition do
       WHERE confidence >= {threshold}
 
       RETURN p.path AS path,
-             p.assets AS assets,
+             COALESCE(p.assets, []) AS assets,
              confidence
     """
 

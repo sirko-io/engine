@@ -1,0 +1,82 @@
+{
+  "reports": [
+    {
+      "columnHeader": {
+        "dimensions": [
+          "ga:previousPagePath",
+          "ga:pagePath",
+          "ga:dateHour"
+        ],
+        "metricHeader": {
+          "metricHeaderEntries": [
+            {
+              "name": "ga:pageviews",
+              "type": "INTEGER"
+            }
+          ]
+        }
+      },
+      "data": {
+        "rows": [
+          {
+            "dimensions": [
+              "/popular",
+              "/about",
+              "2018072914"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "3"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "/popular",
+              "/about",
+              "2018072808"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "1"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "/about",
+              "/about",
+              "2018072721"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "1"
+                ]
+              }
+            ]
+          },
+          {
+            "dimensions": [
+              "/about",
+              "/list",
+              "2018072720"
+            ],
+            "metrics": [
+              {
+                "values": [
+                  "10"
+                ]
+              }
+            ]
+          }
+        ],
+        "rowCount": 4
+      }
+    }
+  ]
+}

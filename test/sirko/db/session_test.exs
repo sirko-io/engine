@@ -19,11 +19,12 @@ defmodule Sirko.Db.SessionTest do
     setup do
       info = [
         session_key: "skey1",
-        entry: %Entry{
-          referrer_path: "/popular",
-          current_path: "/list",
-          assets: ["http://example.org/form.js"]
-        }
+        entry:
+          Entry.new(
+            referrer_path: "/popular",
+            current_path: "/list",
+            assets: ["http://example.org/form.js"]
+          )
       ]
 
       {:ok, info}

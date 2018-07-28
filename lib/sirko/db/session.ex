@@ -21,15 +21,8 @@ defmodule Sirko.Db.Session do
   """
   @spec track(session_key, entry :: Entry.t()) :: any
   def track(session_key, entry) do
-    %Entry{
-      referrer_path: referrer_path,
-      current_path: current_path,
-      assets: assets
-    } = entry
-
     query = """
       MERGE (referrer:Page { path: {referrer_path} })
-
       MERGE (current:Page { path: {current_path} })
       SET current.assets = {assets}
 
@@ -38,12 +31,9 @@ defmodule Sirko.Db.Session do
       ON MATCH SET s.occurred_at = timestamp(), s.count = s.count + 1
     """
 
-    Neo4j.query(query, %{
-      key: session_key,
-      referrer_path: referrer_path,
-      current_path: current_path,
-      assets: assets
-    })
+    params = Map.put(entry, "key", session_key)
+
+    Neo4j.query(query, params)
   end
 
   @doc """

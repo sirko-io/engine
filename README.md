@@ -29,6 +29,7 @@ The solution works in browsers which [support service workers](https://caniuse.c
   - [Install without containers](#install-without-containers)
   - [Nginx virtual host](#nginx-virtual-host)
   - [Client integration](#client-integration)
+- [Importing data from Google Analytics](#importing-data-from-google-analytics-ga)
 - [Offline work](#offline-work)
 - [Getting accuracy](#getting-accuracy)
 - [Catching errors](#catching-errors)
@@ -293,6 +294,39 @@ location = /sirko_sw.js {
 Another way is to copy [this script](https://github.com/sirko-io/client/blob/master/dist/sirko_sw.js) and serve it via your backend.
 
 Once you've integrated the client, visit your site, open a development webtool (F12) and make sure that requests to the engine have status 200. If you use Chrome, click on the _Application_ tab, then click on the _Service workers_ item in the left sidebar. There you should see all registered service workers on your page. You need to find a `sirko_sw.js` service worker, it should have the `activated and running` state and no errors.
+
+## Importing data from Google Analytics (GA)
+
+To get realistic predictions, it takes time to gather data. Although, you can import sessions from your GA account, thus, you can see benefits of the solution right after installation. Data gets exported from [Analytics Reporting API](https://developers.google.com/analytics/devguides/reporting/core/v4/), so you will need to grant access to your GA account. After importing, the engine doesn't need access to GA, so you can revoke it.
+
+Before running the import command, you need to follow [those 7 steps](https://developers.google.com/adwords/api/docs/guides/authentication#installed) to acquire the client ID and client secret. Then, you need to follow [those 5 steps](https://stackoverflow.com/a/47921777/321215) to find your Analytics View Id.
+
+Now you are ready to import sessions.
+
+Run if the engine was installed without Docker:
+
+```
+$ bin/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
+```
+
+Otherwise:
+
+```
+$ sudo docker run --rm -ti dnesteryuk/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
+```
+
+**IMPORTANT:** Please, don't forget to use the `--network host` argument if Neo4j was installed on the same server.
+
+```
+$ sudo docker run --rm -ti --network host dnesteryuk/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
+```
+
+There are a few restrictions you need to know about:
+
+ - The imported pages won't have assets, thus, assets cannot be prefetched until the engine gets them from the client (it happens when a user visits pages, so this gap will be automatically filled overtime).
+ - There is a difference between the engine and GA in tracking sessions, thus, the prediction accuracy by using the imported data might be different.
+ - The engine imports sessions for a number of days defined in a `sirko.engine.stale_session_in` setting (you can find it in a `config/sirko.conf` file).
+ - If a site has lots of visitors, GA will have ton of records. Mostly, all data isn't required, so the engine imports 500,000 records at most.
 
 ## Offline work
 

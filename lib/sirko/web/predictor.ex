@@ -46,7 +46,6 @@ defmodule Sirko.Web.Predictor do
       Enum.reduce(list, {[], []}, fn page, {pages, assets} ->
         pages = [Map.take(page, page_attrs) | pages]
         assets = assets ++ page["assets"]
-
         {pages, assets}
       end)
 

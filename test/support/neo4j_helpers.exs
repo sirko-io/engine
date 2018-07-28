@@ -6,8 +6,8 @@ defmodule Support.Neo4jHelpers do
       {:ok, res} ->
         res
 
-      {:error, [code: _code, message: message]} ->
-        raise message
+      {:error, datails} ->
+        raise "#{Keyword.get(datails, :code)} #{Keyword.get(datails, :message)}"
     end
   end
 
@@ -17,7 +17,8 @@ defmodule Support.Neo4jHelpers do
 
   def load_fixture(name) do
     query =
-      Path.join([__DIR__, "..", "fixtures", name <> ".cypher"])
+      [__DIR__, "..", "fixtures", name <> ".cypher"]
+      |> Path.join()
       |> File.read!()
 
     execute_query(query)
@@ -47,6 +48,14 @@ defmodule Support.Neo4jHelpers do
     transition_between_pages({"path", a_path}, {"path", b_path})
   end
 
+  def count_sessions do
+    query = "MATCH ()-[s:SESSION]->() RETURN count(s) AS count"
+
+    [%{"count" => count}] = execute_query(query)
+
+    count
+  end
+
   def count_sessions(session_key) do
     query = """
       MATCH ()-[s:SESSION { key: {key} }]->()
@@ -59,10 +68,7 @@ defmodule Support.Neo4jHelpers do
   end
 
   def count_pages do
-    query = """
-      MATCH (page:Page)
-      RETURN count(page) AS count
-    """
+    query = "MATCH (page:Page) RETURN count(page) AS count"
 
     [%{"count" => count}] = execute_query(query)
 

@@ -1,8 +1,12 @@
 MERGE (start:Page { path: "/" })
 MERGE (list:Page { path: "/list" })
 MERGE (popular:Page { path: "/popular" })
-MERGE (details:Page { path: "/details", assets: ["details.js", "app.js"] })
-MERGE (about:Page { path: "/about", assets: ["about.js", "app.js"] })
+MERGE (details:Page { path: "/details" })
+SET details.assets = ["details.js", "app.js"]
+
+MERGE (about:Page { path: "/about" })
+SET about.assets = ["about.js", "app.js"]
+
 MERGE (lonely:Page { path: "/lonely" })
 MERGE (single:Page { path: "/single" })
 MERGE (exit:Page { exit: true })
