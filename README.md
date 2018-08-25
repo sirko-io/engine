@@ -40,7 +40,7 @@ The solution works in browsers which [support service workers](https://caniuse.c
 
 There are at least 3 ways to install the engine. The easiest one is to install it with [Docker](#install-with-docker) or [Docker Compose](#install-with-docker-compose) (it installs Neo4j along with the engine). But, if you have reasons not to use Docker, follow [this instruction](#install-without-containers).
 
-**IMPORTANT:** The instructions (besides the one about Docker Compose) suppose that Neo4j 3.0 or greater is already [installed](http://neo4j.com/docs/operations-manual/3.1/installation/) on your server or you got an account from one of [Neo4j cloud hosting providers](https://neo4j.com/developer/neo4j-cloud-hosting-providers/). **If you decide to host a Neo4j instance on your server, please, make sure you have at least 2 Gb of free RAM.**
+**IMPORTANT:** The instructions (besides the one about Docker Compose) suppose that Neo4j 3.4 or greater is already [installed](http://neo4j.com/docs/operations-manual/3.4/installation/) on your server or you got an account from one of [Neo4j cloud hosting providers](https://neo4j.com/developer/neo4j-cloud-hosting-providers/). **If you decide to host a Neo4j instance on your server, please, make sure you have at least 2 Gb of free RAM.**
 
 ## Install with [Docker](http://docker.com)
 
@@ -108,7 +108,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
     version: '2'
     services:
       neo4j:
-        image: neo4j:3.1.1
+        image: neo4j:3.4.6
         restart: always
         environment:
           - NEO4J_AUTH=none

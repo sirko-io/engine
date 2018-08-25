@@ -20,14 +20,14 @@ If you have any thoughts about models, technologies, solutions, features, please
 
 ### Dependencies
 
- - [Elixir](http://elixir-lang.org/install.html) 1.6.*
- - [Neo4j](https://neo4j.com/download/) 3.*
+ - [Elixir](http://elixir-lang.org/install.html) 1.7.*
+ - [Neo4j](https://neo4j.com/download/) 3.4.*
  - [Npm](https://npmjs.com)
 
 To avoid any issues with installing Neo4j (we don't say it is hard :blush:), we recommend using [Docker](https://www.docker.com/). Execute the following command to install Neo4j:
 
 ```
-$ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7687:7687 -p 7474:7474 neo4j:3.1
+$ sudo docker run --name neo4j-db -d -e NEO4J_AUTH=none --restart always -p 7687:7687 -p 7474:7474 neo4j:3.4
 ```
 
 The web interface of Neo4j is accessible on [http://localhost:7474](http://localhost:7474).
@@ -75,7 +75,7 @@ The project is integrated with [TravisCI](https://travis-ci.org). Before creatin
 Neo4j doesn't support multiple databases. So, to keep the test environment isolated from the development environment, you can launch a separate Neo4j instance via Docker:
 
 ```
-$ sudo docker run --name neo4j-test-db -d -e NEO4J_AUTH=none --restart always -p 7688:7687 -p 7475:7474 neo4j:3.1
+$ sudo docker run --name neo4j-test-db -d -e NEO4J_AUTH=none --restart always -p 7688:7687 -p 7475:7474 neo4j:3.4
 ```
 
 ## Style guide

@@ -20,7 +20,7 @@ defmodule Sirko.Cleaner do
     # TODO: do we need to do this operation in a transaction?
     stale_session_in
     |> Db.Session.all_stale()
-    |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
+    |> Enum.chunk_every(@chunk_sessions_on)
     |> Enum.each(fn keys -> Db.Transition.exclude_sessions(keys) end)
 
     Db.Session.remove_stale(stale_session_in)

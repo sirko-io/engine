@@ -64,7 +64,7 @@ defmodule Sirko.Session do
   def expire_all_inactive(inactive_session_in) do
     inactive_session_in
     |> Db.Session.all_inactive()
-    |> Enum.chunk(@chunk_sessions_on, @chunk_sessions_on, [])
+    |> Enum.chunk_every(@chunk_sessions_on)
     |> Enum.each(fn keys -> expire(keys) end)
   end
 
