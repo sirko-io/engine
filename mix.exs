@@ -40,8 +40,8 @@ defmodule Sirko.Mixfile do
       {:bolt_sips, github: "florinpatrascu/bolt_sips"},
       {:rollbax, "~> 0.9"},
       {:poison, "~> 3.1"},
-      {:distillery, "~> 1.5", require: false},
-      {:conform, "~> 2.5", require: false},
+      {:distillery, "~> 2.0", require: false},
+      {:toml, github: "bitwalker/toml-elixir"},
       {:credo, "~> 0.9", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false}
     ]

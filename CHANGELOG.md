@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0 (No released yet)
+
+### Changed
+
+- The engine's config (`sirko.conf`) was migrated to a [Toml format](https://en.wikipedia.org/wiki/TOML). Settings didn't change their position in the config file, so it should be easy to find and specify your settings. Don't forget to backup your current config before upgrading.
+
 ## v0.4.1 (23 April 2018)
 
 ### Fixed

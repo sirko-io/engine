@@ -22,7 +22,7 @@ config :sirko, :scheduler,
   remove_stale_data_every: 3600 * 1000 * 24
 
 # Settings which affect the behavior of the engine. These settings are used by different parts of the engine.
-# To get more details about them, read the config schema: config/sirko.schema.exs
+# To get more details about them, read the prod config: config/sirko.toml
 config :sirko, :engine,
   inactive_session_in: 3600 * 1000,
   stale_session_in: 3600 * 1000 * 24 * 7,

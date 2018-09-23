@@ -94,7 +94,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
     $ nano sirko.conf
     ```
 
-    Please, use a `http://neo4j:7687` url for the `neo4j.url` setting.
+    Please, use a `http://neo4j:7687` URL for the `neo4j.url` setting.
 
 3. Create a docker-compose.yml file:
 
@@ -307,11 +307,13 @@ to the script block where you've defined the url to the engine. This option mean
 If you want to cache the entire site for offline use, you need to open the `config/sirko.conf` file and set
 
 ```
+[sirko.engine]
+
 # now all pages will pass the threshold
-sirko.engine.confidence_threshold = 0
+confidence_threshold = 0
 
 # hopefully, your site has less number of pages than this value
-sirko.engine.max_pages_in_prediction = 1000000000
+max_pages_in_prediction = 1000000000
 ```
 
 This configuration means that all pages will be fetched whenever the user moves to another page. Even if they are cached, they will be fetched again to keep the most fresh version. The load on your backend might be reduced if you set expiration for your resources, a [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) which is used in precaching resources respects the [Cache control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header.

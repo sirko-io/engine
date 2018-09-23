@@ -8,6 +8,8 @@ defmodule Sirko do
 
   require Logger
 
+  import Application, only: [get_env: 2]
+
   @issues_url "https://github.com/sirko-io/engine/issues"
 
   @doc "Callback for Application.start/2"
@@ -24,10 +26,6 @@ defmodule Sirko do
     opts = [strategy: :one_for_one, name: Sirko.Supervisor]
 
     Supervisor.start_link(children, opts)
-  end
-
-  defp get_env(ns, key) do
-    Application.get_env(ns, key)
   end
 
   defp print_help_info(version) do

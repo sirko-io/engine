@@ -117,7 +117,7 @@ To release the engine, a [distilery](https://github.com/bitwalker/distillery) to
 To build a new release, follow the following steps:
 
 1. Make sure the version of the engine in `Sirko.Mixfile` is valid.
-2. Make sure the production config `config/sirko.conf` is up to date.
+2. Make sure the production config `config/sirko.toml` is up to date.
 3. Make sure the `package.json` contains a valid version of the sirko client.
 4. Build the release:
 
