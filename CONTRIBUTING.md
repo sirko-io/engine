@@ -42,7 +42,7 @@ The web interface of Neo4j is accessible on [http://localhost:7474](http://local
     $ npm install
     ```
 
-3. Set a url to your site:
+3. Set a URL to your site:
 
     ```
     # .profile
@@ -112,7 +112,7 @@ Before submitting a PR, make sure the PR meets following requirements:
 
 ## Building a release
 
-To release the engine, a [distilery](https://github.com/bitwalker/distillery) tool gets used. It packages an elixir application, so it can be launched anywhere without installing Elixir and Erlang. The built package contains all dependencies. As elixir applications cannot be configured via environment variables after compilation, a [conform](https://github.com/bitwalker/conform) library is used to configure the engine in runtime.
+To release the engine, a [distilery](https://github.com/bitwalker/distillery) tool gets used. It packages an elixir application, so it can be launched anywhere without installing Elixir and Erlang. The built package contains all dependencies. As elixir applications cannot be configured via environment variables after compilation, a [toml elixir](https://github.com/bitwalker/toml-elixir) library is used to configure the engine in runtime.
 
 To build a new release, follow the following steps:
 

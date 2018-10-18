@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "sirko": "0.4.1"
+    "sirko": "0.5.0"
   },
   "repository": {
     "type": "git",

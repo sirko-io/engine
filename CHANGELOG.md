@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.0 (No released yet)
+## v0.5.0 (23 October 2018)
 
 ### Changed
 
@@ -8,7 +8,8 @@
 
 ### Added
 
- - If you use Google Analytics on your site, now it is possible to import sessions from GA, thus, you can get more realistic predictions earlier. Please, get more details [here](https://github.com/sirko-io/engine#importing-data-from-google-analytics-ga) ([sirko-io/engine#40](https://github.com/sirko-io/engine/issues/40)).
+ - If you use Google Analytics (GA) on your site, now it is possible to import sessions from GA, thus, you can get more realistic predictions earlier. Please, get more details [here](https://github.com/sirko-io/engine#importing-data-from-google-analytics-ga) ([sirko-io/engine#40](https://github.com/sirko-io/engine/issues/40)).
+ - Besides prefetching JavaScript and CSS files, the client was changed to prefetch images too. However, only critical images makes sense to be prefetched. So, a [CSS selector for finding images](https://github.com/sirko-io/engine#prefetching-images) should be provided while setting up the client. ([sirko-io/client#36](https://github.com/sirko-io/client/issues/36)).
 
 ## v0.4.1 (23 April 2018)
 

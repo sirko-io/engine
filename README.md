@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/sirko-io/engine.svg?branch=master)](https://travis-ci.org/sirko-io/engine)
 
-It is a solution for supporting users during navigation. Learning how users navigate the engine precaches resources (pages, JS and CSS files) a user might need in a next transition. The precached resources get accumulated for offline use and get served when the user is offline. Precaching resources and offline work improve user's experience and engagement rate.
+It is a solution for supporting users during navigation. Learning how users navigate the engine precaches resources (pages, JS, image and CSS files) a user might need in a next transition. The precached resources get accumulated for offline use and get served when the user is offline. Precaching resources and offline work improve user's experience and engagement rate.
 
 Motivation and technical details are described in [that article](https://nesteryuk.info/2018/04/08/automate-precaching-resources.html).
 
 Currently, this solution is only recommended for pages which meet the following criteria:
 
-- **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for a such site, historical data of users' purchases, views and other stuff must be used.
+- **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for such a site, historical data of users' purchases, views and other stuff must be used.
 - **pages are served over a secure connection (HTTPS)**. The client part is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers).
 
 [Try demo](http://demo.sirko.io)
@@ -31,6 +31,7 @@ The solution works in browsers which [support service workers](https://caniuse.c
   - [Client integration](#client-integration)
 - [Importing data from Google Analytics](#importing-data-from-google-analytics-ga)
 - [Offline work](#offline-work)
+- [Prefetching images](#prefetching-images)
 - [Getting accuracy](#getting-accuracy)
 - [Catching errors](#catching-errors)
 - [Contributing](/CONTRIBUTING.md)
@@ -48,7 +49,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.1/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.5.0/config/sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -86,7 +87,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.4.1/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.5.0/config/sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -154,7 +155,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 1. Download the latest release:
 
     ```
-    $ wget https://github.com/sirko-io/engine/releases/download/v0.4.1/sirko.tar.gz
+    $ wget https://github.com/sirko-io/engine/releases/download/v0.5.0/sirko.tar.gz
     ```
 
 2. Unpack the archive:
@@ -225,7 +226,7 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
 
     the engine is running and it is ready to accept requests.
 
-### Nginx virtual host
+## Nginx virtual host
 
 1. Create a nginx virtual host for the engine:
 
@@ -242,13 +243,24 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
         server 127.0.0.1:4000;
     }
     server{
-        listen 80;
+        listen 443 ssl http2;
+
         server_name sirko.yourhostname.tld;
+
+        gzip on;
+        gzip_types text/javascript application/javascript;
+        gzip_comp_level 5;
 
         location / {
             include proxy_params;
             proxy_redirect off;
             proxy_pass http://sirko;
+
+            if ($request_uri ~* "\.js$") {
+                expires 7d;
+                add_header Pragma public;
+                add_header Cache-Control "public";
+            }
         }
     }
     ```
@@ -258,6 +270,8 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
     ```
     $ sudo service nginx restart
     ```
+
+9. Acquire a SSL certificate for your site. The easiest way is to use [Certbot](https://certbot.eff.org).
 
 ### Client integration
 
@@ -351,6 +365,16 @@ max_pages_in_prediction = 1000000000
 ```
 
 This configuration means that all pages will be fetched whenever the user moves to another page. Even if they are cached, they will be fetched again to keep the most fresh version. The load on your backend might be reduced if you set expiration for your resources, a [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) which is used in precaching resources respects the [Cache control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header.
+
+## Prefetching images
+
+By default, only URLs to JS and CSS files get gathered. Although, there is a way to gather URLs to images and later prefetch them:
+
+```javascript
+sirko('imagesSelector', 'img');
+```
+
+The provided selector must be a valid [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors).
 
 ## Getting accuracy
 
