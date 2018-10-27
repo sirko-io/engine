@@ -49,7 +49,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
     ```
-    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.5.0/config/sirko.conf
+    $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.5.0/config/sirko.toml -O sirko.conf
     ```
 
 2. Define your settings in the config file:
@@ -61,13 +61,22 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 3. Launch a docker container:
 
     ```
-    $ sudo docker run -d --name sirko -p 4000:4000 --restart always -v ~/sirko.conf:/usr/local/sirko/sirko.conf dnesteryuk/sirko:latest
+    $ sudo docker run -d --name sirko \
+                      -p 4000:4000 \
+                      --restart always \
+                      -v ~/sirko.conf:/usr/local/sirko/sirko.conf \
+                      dnesteryuk/sirko:latest
     ```
 
     **IMPORTANT:** If you host the Neo4j instance on your server, you have to be sure the engine has access to it. To do that, use a network argument while launching the container:
 
     ```
-    $ sudo docker run -d --name sirko -p 4000:4000 --restart always --network host -v ~/sirko.conf:/usr/local/sirko/sirko.conf dnesteryuk/sirko:latest
+    $ sudo docker run -d --name sirko \
+                      -p 4000:4000 \
+                      --restart always \
+                      -v ~/sirko.conf:/usr/local/sirko/sirko.conf \
+                      --network host \
+                      dnesteryuk/sirko:latest
     ```
 
 4. Verify what happens to the engine:
@@ -78,7 +87,8 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 
   If you see a message like this:
 
-      2017-02-26 10:22:02.551 [info] Expecting requests from http://localhost
+      2018-10-27 08:29:57.154 [info] The current version is 0.5.0. If you have questions/issues, please, report them https://github.com/sirko-io/engine/issues
+      2018-10-27 08:29:57.154 [info] Expecting requests from http://localhost
 
   the engine is running and it is ready to accept requests.
 
@@ -87,7 +97,7 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 1. Download a config file:
 
    ```
-   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.5.0/config/sirko.conf
+   $ wget https://raw.githubusercontent.com/sirko-io/engine/v0.5.0/config/sirko.toml -O sirko.conf
    ```
 
 2. Define your settings in the config file:
@@ -142,7 +152,8 @@ There are at least 3 ways to install the engine. The easiest one is to install i
 
   If you see a message like this:
 
-      2017-02-26 10:17:19.408 [info] Expecting requests from http://localhost
+      2018-10-27 08:29:57.154 [info] The current version is 0.5.0. If you have questions/issues, please, report them https://github.com/sirko-io/engine/issues
+      2018-10-27 08:29:57.154 [info] Expecting requests from http://localhost
 
   the engine is running and it is ready to accept requests.
 
@@ -265,13 +276,13 @@ The instruction supposes that you have a ubuntu user, please, don't forget to re
     }
     ```
 
-8. Restart Nginx:
+3. Restart Nginx:
 
     ```
     $ sudo service nginx restart
     ```
 
-9. Acquire a SSL certificate for your site. The easiest way is to use [Certbot](https://certbot.eff.org).
+4. Acquire a SSL certificate for your site. The easiest way is to use [Certbot](https://certbot.eff.org).
 
 ### Client integration
 
@@ -326,13 +337,7 @@ $ bin/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
 Otherwise:
 
 ```
-$ sudo docker run --rm -ti dnesteryuk/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
-```
-
-**IMPORTANT:** Please, don't forget to use the `--network host` argument if Neo4j was installed on the same server.
-
-```
-$ sudo docker run --rm -ti --network host dnesteryuk/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
+$ sudo docker exec -ti sirko bin/sirko import_ga <your_client_id> <your_client_secret> <your_view_id>
 ```
 
 There are a few restrictions you need to know about:
