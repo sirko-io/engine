@@ -9,7 +9,7 @@ defmodule Sirko.Web do
   require Logger
 
   alias Sirko.Web.{Session, Predictor}
-  alias Plug.Adapters.Cowboy2
+  alias Plug.Cowboy
 
   plug(Plug.Logger)
   plug(Sirko.Plugs.Cors)
@@ -46,7 +46,7 @@ defmodule Sirko.Web do
 
     Logger.info(fn -> "Expecting requests from #{client_url}" end)
 
-    Cowboy2.child_spec(cowboy_opts)
+    Cowboy.child_spec(cowboy_opts)
   end
 
   def init(opts), do: opts

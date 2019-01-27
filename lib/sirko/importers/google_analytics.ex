@@ -166,6 +166,6 @@ defmodule Sirko.Importers.GoogleAnalytics do
       utc_offset: 0,
       std_offset: 0
     }
-    |> DateTime.to_unix(:milliseconds)
+    |> DateTime.to_unix(:millisecond)
   end
 end

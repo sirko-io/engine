@@ -7,7 +7,7 @@ defmodule Sirko.Mixfile do
     [
       app: :sirko,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.8",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -36,17 +36,18 @@ defmodule Sirko.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cowboy, "~> 2.4"},
-      {:plug, "~> 1.5"},
+      {:cowboy, "~> 2.6"},
+      {:plug, "~> 1.7"},
+      {:plug_cowboy, "~> 2.0"},
       {:bolt_sips, github: "florinpatrascu/bolt_sips"},
-      {:rollbax, "~> 0.9"},
-      {:poison, "~> 3.1"},
+      {:rollbax, "~> 0.10"},
+      {:poison, "~> 4.0"},
       {:oauth2, "~> 0.9", require: false},
       {:distillery, "~> 2.0", require: false},
       {:toml, github: "bitwalker/toml-elixir"},
-      {:credo, "~> 0.9", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false},
-      {:benchee, "~> 0.11", only: [:dev]}
+      {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev], runtime: false},
+      {:benchee, "~> 0.13", only: [:dev]}
     ]
   end
 end
