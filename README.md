@@ -13,13 +13,9 @@ Currently, this solution is only recommended for pages which meet the following 
 
 [Try demo](http://demo.sirko.io)
 
-### Users on mobile devices
+### Help is needed
 
-Navigation on mobile devices might be different, thus, to make correct predictions for desktop and mobile users we need to split them in the prediction model. It might be developed later.
-
-### Browser support
-
-The solution works in browsers which [support service workers](https://caniuse.com/#search=serviceworker).
+Data driven solutions need data. The current prediction is naive. I've been trying to see how the model might be improved by adding [K-mean](https://en.wikipedia.org/wiki/K-means_clustering) for splitting users by screen sizes and Higher Order Markov Model for considering previously visited pages. So, if you want to improve the solution, you might extract user sessions of your Google Analytics account and send it to [me](https://github.com/dnesteryuk), [here is a request](https://gist.github.com/dnesteryuk/9ac528b0ff822ff9b0f8005c81fa4f6c#file-request-json) which extracts data I am interested in. As you can see, the request fetches rows containing a previous page, a current page, a browser size and date. The response will [look like this](https://gist.github.com/dnesteryuk/9ac528b0ff822ff9b0f8005c81fa4f6c#file-response_example-json), you might try out the request [here](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet).
 
 ## Table of contents
 
@@ -34,6 +30,7 @@ The solution works in browsers which [support service workers](https://caniuse.c
 - [Prefetching images](#prefetching-images)
 - [Getting accuracy](#getting-accuracy)
 - [Catching errors](#catching-errors)
+- [Browser support](#browser-support)
 - [Contributing](/CONTRIBUTING.md)
 - [Changelog](/CHANGELOG.md)
 - [License](#license)
@@ -405,6 +402,12 @@ The code example uses the onload callback to be sure that all dependencies get l
 ## Catching errors
 
 You might want to catch errors which happen to the engine and report them. The engine got integrated with [Rollbar](https://rollbar.com) which notifies you about errors via an email or a messenger (it supports a few). To start using it, register an account and add your rollbar access token to the `sirko.conf`.
+
+## Browser support
+
+The solution works in browsers which [support service workers](https://caniuse.com/#search=serviceworker).
+
+However, mobile users are ignored now. Navigation on mobile devices might be different, thus, to make correct predictions for desktop and mobile users we need to split them in the prediction model. It will be developed later.
 
 ## License
 
