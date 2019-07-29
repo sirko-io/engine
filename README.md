@@ -11,7 +11,7 @@ Currently, this solution is only recommended for pages which meet the following 
 - **pages aren't too diverse**. For instance, if you have online store with lots of products, this solution won't work well. To make correct predictions for such a site, historical data of users' purchases, views and other stuff must be used.
 - **pages are served over a secure connection (HTTPS)**. The client part is based on a [service worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers).
 
-[Try demo](http://demo.sirko.io)
+[Try demo](https://sirko-demo.nesteryuk.info)
 
 ### Help is needed
 
